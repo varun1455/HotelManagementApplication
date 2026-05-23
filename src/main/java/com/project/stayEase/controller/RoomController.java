@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/rooms")
+@RequestMapping("/admin/hotels/{hotelId}/rooms")
 @AllArgsConstructor
 public class RoomController {
 
     private final RoomService roomService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<RoomResponseDto>> createRoom(@RequestBody RoomRequestDto roomRequestDto) {
-        RoomResponseDto roomResponseDto = roomService.createRoom(roomRequestDto);
+    public ResponseEntity<ApiResponse<RoomResponseDto>> createRoom(@PathVariable Long hotelId, @RequestBody RoomRequestDto roomRequestDto) {
+        RoomResponseDto roomResponseDto = roomService.createRoom(hotelId,roomRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{hotelId}")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<RoomResponseDto>>> getAllRoomsInHotel(@PathVariable Long hotelId) {
         List<RoomResponseDto> roomResponseDtos = roomService.getAllRoomsInHotel(hotelId);
         return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDtos), HttpStatus.OK);
@@ -36,5 +36,17 @@ public class RoomController {
     public ResponseEntity<ApiResponse<RoomResponseDto>> getRoomById(@PathVariable Long roomId) {
         RoomResponseDto roomResponseDto = roomService.getRoomById(roomId);
         return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/{roomId}")
+    public ResponseEntity<ApiResponse<RoomResponseDto>> updateRoom(@PathVariable Long roomId, @RequestBody RoomRequestDto roomRequestDto) {
+        RoomResponseDto roomResponseDto = roomService.updateRoom(roomId, roomRequestDto);
+        return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId){
+        roomService.deleteRoomById(roomId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -47,4 +47,9 @@ public class HotelController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{hotelId}")
+    public ResponseEntity<Void> deleteHotel(@PathVariable Long hotelId){
+        hotelService.deleteHotelById(hotelId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -11,6 +11,7 @@ import com.project.stayEase.repository.BedTypeRepository;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.repository.RoomRepository;
 import com.project.stayEase.repository.RoomTypeRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,24 @@ public class RoomServiceImpl implements RoomService {
     private final HotelRepository hotelRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final BedTypeRepository bedTypeRepository;
+    private final InventoryService inventoryService;
     private final ModelMapper modelMapper;
 
     @Override
-    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto) {
-        roomTypeRepository.findById(roomRequestDto.getRoomTypeId()).orElseThrow(()->new ResourceNotFoundException("RoomType not found " + roomRequestDto.getRoomTypeId()));
-        bedTypeRepository.findById(roomRequestDto.getBedTypeId()).orElseThrow(()->new ResourceNotFoundException("BedType not found " + roomRequestDto.getBedTypeId()));
+    @Transactional
+    public RoomResponseDto createRoom(Long hotelId, RoomRequestDto roomRequestDto) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + hotelId));
+        RoomType roomType = roomTypeRepository.findById(roomRequestDto.getRoomTypeId()).orElseThrow(()->new ResourceNotFoundException("RoomType not found " + roomRequestDto.getRoomTypeId()));
+        BedType bedType = bedTypeRepository.findById(roomRequestDto.getBedTypeId()).orElseThrow(()->new ResourceNotFoundException("BedType not found " + roomRequestDto.getBedTypeId()));
         Room room = modelMapper.map(roomRequestDto, Room.class);
+        room.setType(roomType);
+        room.setBedType(bedType);
+        room.setHotel(hotel);
         roomRepository.save(room);
+
+        if(hotel.isActive()){
+            inventoryService.initializeRoomForYear(room);
+        }
         return modelMapper.map(room, RoomResponseDto.class);
     }
 
@@ -52,5 +63,23 @@ public class RoomServiceImpl implements RoomService {
     public RoomResponseDto getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Room not found with id " + roomId));
         return modelMapper.map(room, RoomResponseDto.class);
+    }
+
+    @Override
+    public RoomResponseDto updateRoom(Long roomId, RoomRequestDto roomRequestDto) {
+        if(!roomRepository.existsById(roomId)) throw new ResourceNotFoundException("Hotel not found with id " + roomId);
+        roomTypeRepository.findById(roomRequestDto.getRoomTypeId()).orElseThrow(()->new ResourceNotFoundException("RoomType not found " + roomRequestDto.getRoomTypeId()));
+        bedTypeRepository.findById(roomRequestDto.getBedTypeId()).orElseThrow(()->new ResourceNotFoundException("BedType not found " + roomRequestDto.getBedTypeId()));
+        Room updatedRoom = modelMapper.map(roomRequestDto, Room.class);
+        roomRepository.save(updatedRoom);
+        return modelMapper.map(updatedRoom, RoomResponseDto.class);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoomById(long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Room not found with id " + roomId));
+        inventoryService.deleteAllInventoriesForRoom(room);
+        roomRepository.deleteById(roomId);
     }
 }
