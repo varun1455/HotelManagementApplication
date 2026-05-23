@@ -7,10 +7,13 @@ import java.util.List;
 
 public interface RoomService {
 
-    RoomResponseDto createRoom(RoomRequestDto roomRequestDto);
+    RoomResponseDto createRoom(Long hotelId, RoomRequestDto roomRequestDto);
 
     List<RoomResponseDto> getAllRoomsInHotel(Long hotelId);
 
     RoomResponseDto getRoomById(Long roomId);
 
+    RoomResponseDto updateRoom(Long roomId, RoomRequestDto roomRequestDto);
+
+    void deleteRoomById(long roomId);
 }

@@ -4,7 +4,9 @@ import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.HotelRequestDto;
 import com.project.stayEase.dto.HotelResponseDto;
 import com.project.stayEase.entity.Hotel;
+import com.project.stayEase.entity.Room;
 import com.project.stayEase.repository.HotelRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,7 @@ public class HotelServiceImpl implements HotelService{
 
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
+    private final InventoryService inventoryService;
 
 
     @Override
@@ -59,6 +62,22 @@ public class HotelServiceImpl implements HotelService{
     public void activateHotel(Long id) {
         Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + id));
         hotel.setActive(true);
-        hotelRepository.save(hotel);
+//        hotelRepository.save(hotel);
+        for(Room room: hotel.getRooms()){
+            inventoryService.initializeRoomForYear(room);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteHotelById(Long id) {
+        Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + id));
+
+        for(Room room: hotel.getRooms()){
+            inventoryService.deleteAllInventoriesForRoom(room);
+        }
+        hotelRepository.deleteById(id);
+
     }
 }
