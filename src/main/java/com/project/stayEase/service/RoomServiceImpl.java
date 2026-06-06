@@ -43,7 +43,7 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.save(room);
 
         if(hotel.isActive()){
-            inventoryService.initializeRoomForYear(room);
+            inventoryService.initializeRoomForHalfYear(room);
         }
         return modelMapper.map(room, RoomResponseDto.class);
     }

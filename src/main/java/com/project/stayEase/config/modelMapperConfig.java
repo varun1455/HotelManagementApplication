@@ -2,6 +2,7 @@ package com.project.stayEase.config;
 
 import com.project.stayEase.dto.RoomRequestDto;
 import com.project.stayEase.dto.RoomResponseDto;
+import com.project.stayEase.dto.RoomSummaryDtoForBooking;
 import com.project.stayEase.entity.Room;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -30,6 +31,15 @@ public class modelMapperConfig {
 
                     m.map(src -> src.getBedType().getId(),
                             RoomResponseDto::setBedTypeId);
+                });
+        mapper.typeMap(Room.class, RoomSummaryDtoForBooking.class)
+                .addMappings(m -> {
+
+                    m.map(src -> src.getType().getId(),
+                            RoomSummaryDtoForBooking::setRoomTypeId);
+
+                    m.map(src -> src.getBedType().getId(),
+                            RoomSummaryDtoForBooking::setBedTypeId);
                 });
         return mapper;
     }

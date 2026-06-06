@@ -1,5 +1,6 @@
 package com.project.stayEase.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="hotel_id", nullable = false)
+    @JsonBackReference
     private Hotel hotel;
 
     @ManyToOne(optional = false)

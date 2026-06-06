@@ -1,0 +1,24 @@
+package com.project.stayEase.service.strategy;
+
+import com.project.stayEase.entity.Inventory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+@RequiredArgsConstructor
+public class OccupaancyPricingStrategy implements PricingStrategy {
+
+    private final PricingStrategy pricingStrategy;
+
+    @Override
+    public BigDecimal calculatePrice(Inventory inventory) {
+        BigDecimal price = pricingStrategy.calculatePrice(inventory);
+        double occupancy_rate = (double) inventory.getBookedCount()/inventory.getTotalCount();
+        if(occupancy_rate>=0.8){
+            price = price.multiply(BigDecimal.valueOf(1.5));
+
+        }
+        return price;
+    }
+}
