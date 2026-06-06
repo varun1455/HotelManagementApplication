@@ -1,8 +1,10 @@
 package com.project.stayEase.service;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
+import com.project.stayEase.dto.HotelInfoDto;
 import com.project.stayEase.dto.HotelRequestDto;
 import com.project.stayEase.dto.HotelResponseDto;
+import com.project.stayEase.dto.RoomResponseDto;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.repository.HotelRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -64,7 +67,7 @@ public class HotelServiceImpl implements HotelService{
         hotel.setActive(true);
 //        hotelRepository.save(hotel);
         for(Room room: hotel.getRooms()){
-            inventoryService.initializeRoomForYear(room);
+            inventoryService.initializeRoomForHalfYear(room);
         }
 
     }
@@ -79,5 +82,16 @@ public class HotelServiceImpl implements HotelService{
         }
         hotelRepository.deleteById(id);
 
+    }
+
+    @Override
+    public HotelInfoDto findHotelInfo(Long hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + hotelId));
+
+        List<RoomResponseDto> rooms = hotel.getRooms().stream()
+                .map(room-> modelMapper.map(room, RoomResponseDto.class))
+                .toList();
+
+        return new HotelInfoDto(modelMapper.map(hotel, HotelResponseDto.class), rooms);
     }
 }

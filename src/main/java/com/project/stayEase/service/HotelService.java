@@ -1,5 +1,6 @@
 package com.project.stayEase.service;
 
+import com.project.stayEase.dto.HotelInfoDto;
 import com.project.stayEase.dto.HotelRequestDto;
 import com.project.stayEase.dto.HotelResponseDto;
 
@@ -14,4 +15,6 @@ public interface HotelService {
     void activateHotel(Long id);
 
     void deleteHotelById(Long id);
+
+    HotelInfoDto findHotelInfo(Long hotelId);
 }

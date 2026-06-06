@@ -1,5 +1,6 @@
 package com.project.stayEase.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +43,7 @@ public class Hotel {
     private boolean active;
 
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Room> rooms;
 
     @ManyToOne(fetch = FetchType.LAZY)
