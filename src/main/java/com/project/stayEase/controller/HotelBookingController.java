@@ -25,8 +25,11 @@ public class HotelBookingController {
 
     @PostMapping("/init")
     public ResponseEntity<ApiResponse<BookingResponseDto>> initializeBooking(@RequestBody BookingRequestDto bookingRequestDto){
-        log.info("Initiate Booking response {}", bookingService.initializeBooking(bookingRequestDto));
-        return new ResponseEntity<>(ApiResponse.successResponse(bookingService.initializeBooking(bookingRequestDto)), HttpStatus.CREATED);
+        BookingResponseDto bookingResponse =
+                bookingService.initializeBooking(bookingRequestDto);
+
+        log.info("Initiate Booking response {}", bookingResponse);
+        return new ResponseEntity<>(ApiResponse.successResponse(bookingResponse), HttpStatus.CREATED);
     }
 
     @PostMapping("/{bookingId}/addGuests")

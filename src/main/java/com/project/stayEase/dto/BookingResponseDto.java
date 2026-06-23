@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -16,10 +17,10 @@ public class BookingResponseDto {
     private HotelSummyDtoForBooking hotel;
     private RoomSummaryDtoForBooking room;
     private Integer roomsCount;
-    private User user;
+    private UserResponseDto user;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private LocalDateTime createdAt;
     private BookingStatus bookingStatus;
-    private Set<GuestResponseDto> guests;
+    private Set<GuestResponseDto> guests = new HashSet<>();
 }
