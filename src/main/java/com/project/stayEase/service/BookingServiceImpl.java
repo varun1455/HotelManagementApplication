@@ -7,16 +7,20 @@ import com.project.stayEase.dto.GuestRequestDto;
 import com.project.stayEase.entity.*;
 import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.repository.*;
+import com.project.stayEase.security.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,7 @@ public class BookingServiceImpl implements BookingService{
     private final InventoryRepository inventoryRepository;
     private final GuestRepository guestRepository;
     private final ModelMapper modelMapper;
+    private final SecurityUtils securityUtils;
 
     @Override
     @Transactional
@@ -64,7 +69,7 @@ public class BookingServiceImpl implements BookingService{
                 .hotel(hotel)
                 .room(room)
                 .roomsCount(bookingRequestDto.getRoomsCount())
-                .user(getCurrentuser())
+                .user(securityUtils.getCurrentuser())
                 .checkInDate(bookingRequestDto.getCheckInDate())
                 .checkOutDate(bookingRequestDto.getCheckOutDate())
                 .bookingStatus(BookingStatus.RESERVED)
@@ -84,8 +89,11 @@ public class BookingServiceImpl implements BookingService{
 
         log.info("adding guests started");
 
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(()->new ResourceNotFoundException("Booking not found with id " + bookingId));
+        Long currentUserId = securityUtils.getCurrentUserId();
+
+        Booking booking = bookingRepository.findByIdAndUserId(bookingId, currentUserId)
+                .orElseThrow(()->new ResourceNotFoundException("Booking not found or access denied"));
+
 
         log.info(booking.toString());
 
@@ -104,15 +112,12 @@ public class BookingServiceImpl implements BookingService{
         log.info("booking is not in reserved state");
 
         booking.setBookingStatus(BookingStatus.ADDING_GUESTS);
-//        Set<Guest> guests = guestRequestDto.stream()
-//                .map(e-> modelMapper.map(e, Guest.class))
-//                .collect(Collectors.toSet());
 
         log.info("let's add guests now");
 
         for(GuestRequestDto guest : guestRequestDto){
             Guest g = modelMapper.map(guest, Guest.class);
-            g.setUser(getCurrentuser());
+            g.setUser(securityUtils.getCurrentuser());
             guestRepository.save(g);
             booking.getGuests().add(g);
         }
@@ -127,9 +132,4 @@ public class BookingServiceImpl implements BookingService{
         return booking.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now());
     }
 
-    public User getCurrentuser(){
-        User user = new User();
-        user.setId(1L);
-        return user;
-    }
 }
