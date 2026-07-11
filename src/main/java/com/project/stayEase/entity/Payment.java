@@ -1,9 +1,9 @@
 package com.project.stayEase.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.stayEase.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,13 +13,25 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    private String checkoutSessionId;
+
+    @Column(unique = true)
+    private String paymentIntentId;
+
+    @Column(unique = true)
+    private String refundId;
+
+
     private String transactionId;
 
     @Column(nullable = false)
@@ -35,7 +47,7 @@ public class Payment {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="booking_id")
     private Booking booking;
 

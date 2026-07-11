@@ -9,9 +9,11 @@ import com.project.stayEase.entity.Room;
 import com.project.stayEase.repository.HotelMinPriceRepository;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.repository.InventoryRepository;
+import com.project.stayEase.util.RoomAvailabilityProjection;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,14 +69,66 @@ public class InventoryServiceImpl implements InventoryService {
 
         int daysUntilCheckIn = Math.toIntExact(ChronoUnit.DAYS.between(LocalDate.now(), hotelSearchRequestDto.getStartDate()));
 
-        if(daysUntilCheckIn<=90){
+        if(daysUntilCheckIn<=60){
             return hotelMinPriceRepository.findHotelsWithAvailableInventory(hotelSearchRequestDto.getCity(), hotelSearchRequestDto.getStartDate(),
                     hotelSearchRequestDto.getEndDate(), hotelSearchRequestDto.getRoomsCount(), totalDays, pageable);
         }
 
         Page<Hotel> hotelPage =  inventoryRepository.findHotelsWithAvailableInventory(hotelSearchRequestDto.getCity(), hotelSearchRequestDto.getStartDate(),
                 hotelSearchRequestDto.getEndDate(), hotelSearchRequestDto.getRoomsCount(), totalDays, pageable);
-        return hotelPage.map((element) -> modelMapper.map(element, HotelResponseDto.class));
+
+        List<Long> hotelIds = hotelPage.getContent()
+                .stream()
+                .map(Hotel::getId)
+                .toList();
+
+        System.out.println(hotelIds);
+        List<RoomAvailabilityProjection> roomAvailabilityProjections = inventoryRepository.findAvailableRooms(hotelIds,
+                hotelSearchRequestDto.getStartDate(), hotelSearchRequestDto.getEndDate(), totalDays);
+
+        Map<Long, List<RoomSearchResponseDto>> availableRoomsInHotelMap  = roomAvailabilityProjections.stream()
+                .collect(Collectors.groupingBy(RoomAvailabilityProjection::getHotelId,
+                            Collectors.mapping(
+                                    projection-> {
+                                        Room room = projection.getRoom();
+
+//                                        System.out.println(room.getType().getId());
+//                                        System.out.println(room.getType().getName());
+//
+//                                        System.out.println(room.getBedType().getId());
+//                                        System.out.println(room.getBedType().getName());
+                                        RoomSearchResponseDto roomSearchResponseDto = modelMapper.map(projection.getRoom(), RoomSearchResponseDto.class);
+                                        roomSearchResponseDto.setAvailableNumberOfRooms(projection.getAvailableRooms());
+                                        roomSearchResponseDto.setTotalPrice(projection.getTotalPrice());
+                                        return roomSearchResponseDto;
+                                    },
+                                    Collectors.toList()
+                            )
+                )
+        );
+        Map<Long, BigDecimal> mapOfStartingPrice =  roomAvailabilityProjections.stream()
+                .collect(Collectors.groupingBy(RoomAvailabilityProjection::getHotelId, Collectors.
+                        collectingAndThen(
+                            Collectors.minBy(Comparator.comparing(
+                                    RoomAvailabilityProjection::getTotalPrice)
+                            ), projection->
+                                projection.map(RoomAvailabilityProjection::getTotalPrice).orElse(BigDecimal.ZERO)
+                        )
+                )
+        );
+
+
+        List<HotelSearchResponseDto> hotelSearchResponse = hotelPage.getContent()
+                .stream()
+                .map(hotel->{
+                   HotelSearchResponseDto dto =  modelMapper.map(hotel, HotelSearchResponseDto.class);
+                   dto.setRooms(availableRoomsInHotelMap.getOrDefault(hotel.getId(), Collections.emptyList()));
+                   dto.setStartingFrom(mapOfStartingPrice.getOrDefault(hotel.getId(), BigDecimal.ZERO));
+                    return dto;
+                })
+                .toList();
+
+        return new PageImpl<>(hotelSearchResponse, pageable, hotelPage.getTotalElements());
 
     }
 

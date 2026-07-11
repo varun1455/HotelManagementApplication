@@ -1,5 +1,6 @@
 package com.project.stayEase.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.stayEase.entity.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -60,4 +62,12 @@ public class Booking {
             joinColumns = @JoinColumn(name = "booking_id"),
             inverseJoinColumns = @JoinColumn(name="guest_id"))
     private Set<Guest> guests;
+
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    private List<Payment> payments;
+
+    private LocalDateTime reservedUntil;
+
+    private LocalDateTime paymentInitiatedAt;
+
 }
