@@ -1,14 +1,16 @@
 package com.project.stayEase.repository;
 
-import com.project.stayEase.dto.HotelResponseDto;
+import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;
+import com.project.stayEase.util.RoomAvailabilityProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,6 +21,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     void deleteByRoom(Room room);
 
+
+    /* Searching Hotels with Available Inventory in given date range with rooms count */
     @Query("""
            SELECT DISTINCT i.hotel
            FROM Inventory i
@@ -39,6 +43,28 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     );
 
     @Query("""
+            SELECT
+                i.hotel.id AS hotelId,
+                i.room AS room,
+                MIN(i.totalCount - i.bookedCount - i.reservedCount) AS availableRooms,
+                SUM(i.price) As totalPrice
+            FROM Inventory i
+            WHERE i.hotel.id IN :hotelIds
+                AND i.date BETWEEN :startDate AND :endDate
+                AND i.closed = false
+            GROUP BY i.hotel, i.room
+            HAVING COUNT(i.date) = :totalDays
+            
+""") List<RoomAvailabilityProjection> findAvailableRooms(
+        @Param("hotelIds") List<Long> hotelIds,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("totalDays") Long totalDays
+
+    );
+
+    /* Applying Lock on rooms which user have to book  */
+    @Query("""
             SELECT i
             FROM Inventory i
             WHERE i.room.id = :roomId
@@ -52,6 +78,96 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("roomsCount") Integer roomsCount
+    );
+
+
+    /* initialize booking so increase the reserved count of rooms which user want to book */
+    @Modifying
+    @Query("""
+        UPDATE Inventory i
+        SET i.reservedCount = i.reservedCount + :numberOfRooms
+        WHERE i.room.id = :roomId
+        AND i.date BETWEEN :startDate AND :endDate
+        AND (i.totalCount - i.bookedCount - i.reservedCount) >= :numberOfRooms
+        AND i.closed = false
+ 
+ """)void initBooking(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("numberOfRooms") Integer numberOfRooms
+    );
+
+    /* Releasing Inventory for expiredBookings i.e. decreasing the reservedCount of expiredBookings */
+    @Modifying
+    @Query("""
+       UPDATE Inventory i
+       SET i.reservedCount = i.reservedCount - :numberOfRooms
+       WHERE i.room.id = :roomId
+       AND i.date BETWEEN :startDate AND :endDate
+       AND i.reservedCount >= :numberOfRooms
+       AND i.closed = false
+""")
+    void releasedInventoryForExpiredBooking(
+    @Param("roomId") Long roomId,
+    @Param("startDate") LocalDate startDate,
+    @Param("endDate") LocalDate endDate,
+    @Param("numberOfRooms") Integer numberOfRooms);
+
+
+
+    /* Applying lock on rooms if user is instantiating s payment so that those rooms booking will be confirmed */
+    @Query("""
+            SELECT i
+            FROM Inventory i
+            WHERE i.room.id = :roomId
+                AND i.date BETWEEN :startDate AND :endDate
+                AND (i.totalCount - i.bookedCount) >= :roomsCount
+                AND i.closed = false
+            """)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Inventory> findAndLockReservedInventory(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("roomsCount") Integer roomsCount
+    );
+
+
+    /* Making Booking confirmation with increasing the bookedCount and decreasing the reservedCount of rooms */
+    @Modifying
+    @Query("""
+               UPDATE Inventory i
+                SET i.reservedCount = i.reservedCount - :numberOfRooms,
+                    i.bookedCount = i.bookedCount + :numberOfRooms
+                WHERE i.room.id = :roomId
+                AND i.date BETWEEN :startDate AND :endDate
+                AND (i.totalCount - i.bookedCount) >= :numberOfRooms
+                AND i.reservedCount >= :numberOfRooms
+                AND i.closed = false
+    """
+    )
+    void confirmBooking(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("numberOfRooms") Integer numberOfRooms
+    );
+
+
+    /* Modifying the bookedCount if user is cancelling the confirmed booking */
+    @Query("""
+            UPDATE Inventory i
+            SET i.bookedCount = i.bookedCount - :numberOfRooms
+            WHERE i.room.id = :roomId
+            AND i.date BETWEEN :startDate AND :endDate
+            AND i.bookedCount >= :numberOfRooms
+            AND i.closed = false
+""")int cancelBooking(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("numberOfRooms") Integer numberOfRooms
     );
 
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);

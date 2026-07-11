@@ -5,7 +5,7 @@ import com.project.stayEase.advices.ApiResponse;
 import com.project.stayEase.dto.BookingRequestDto;
 import com.project.stayEase.dto.BookingResponseDto;
 import com.project.stayEase.dto.GuestRequestDto;
-import com.project.stayEase.dto.GuestResponseDto;
+import com.project.stayEase.dto.PaymentSessionDto;
 import com.project.stayEase.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +36,20 @@ public class HotelBookingController {
     public ResponseEntity<ApiResponse<BookingResponseDto>> addGuestsToBooking(@RequestBody List<GuestRequestDto> guestRequestDto,@PathVariable Long bookingId){
 
         return new ResponseEntity<>(ApiResponse.successResponse(bookingService.addGuestsToBooking(guestRequestDto, bookingId)), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{bookingId}/payments")
+    public ResponseEntity<ApiResponse<PaymentSessionDto>> initiatePayment(@PathVariable Long bookingId){
+
+        return new ResponseEntity<>(ApiResponse.successResponse(bookingService.initiatePayment(bookingId)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{bookingId}/cancel")
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId){
+
+        bookingService.cancelMyBooking(bookingId);
+
+        return ResponseEntity.noContent().build();
     }
 }
 
