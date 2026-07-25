@@ -1,0 +1,18 @@
+package com.project.stayEase.util;
+
+import com.project.stayEase.entity.enums.HolidayType;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Map;
+
+
+@Getter
+@Setter
+public class PricingContext {
+    private Map<LocalDate, HolidayType> holidays;
+    private Map<HolidayType, BigDecimal> holidayFactors;
+
+}

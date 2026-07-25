@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByCheckoutSessionId(String sessionId);

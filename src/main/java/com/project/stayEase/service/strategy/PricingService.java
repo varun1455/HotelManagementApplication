@@ -1,29 +1,41 @@
 package com.project.stayEase.service.strategy;
 
 
+import com.project.stayEase.dto.BookingRequestDto;
 import com.project.stayEase.entity.Inventory;
+import com.project.stayEase.util.PricingContext;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class PricingService {
 
-    public BigDecimal calculateDynamicPricing(Inventory inventory){
-        PricingStrategy pricingStrategy = new BasePricingStrategy();
+    private final PricingStrategy pricingStrategy;
 
-        pricingStrategy = new SurgePricingStrategy(pricingStrategy);
-        pricingStrategy = new OccupaancyPricingStrategy(pricingStrategy);
-        pricingStrategy = new UrgencyPricingStrategy(pricingStrategy);
-        pricingStrategy = new HolidayPricingStrategy(pricingStrategy);
+    public PricingService() {
+        PricingStrategy strategy = new BasePricingStrategy();
+        strategy = new SurgePricingStrategy(strategy);
+        strategy = new OccupancyPricingStrategy(strategy);
+        strategy = new UrgencyPricingStrategy(strategy);
+        strategy = new HolidayPricingStrategy(strategy);
 
-        return pricingStrategy.calculatePrice(inventory);
+        this.pricingStrategy = strategy;
+    }
+
+
+    public BigDecimal calculateDynamicPricing(Inventory inventory, PricingContext pricingContext ){
+        return pricingStrategy.calculatePrice(inventory, pricingContext);
     }
 
     public BigDecimal totalPriceOfRoomFromCheckinToCheckoutDate(List<Inventory> inventoryList){
         return inventoryList.stream()
-                .map(this::calculateDynamicPricing)
+                .map(inventory ->
+                        inventory.getDynamicPrice() != null
+                                ? inventory.getDynamicPrice()
+                                : inventory.getPrice())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

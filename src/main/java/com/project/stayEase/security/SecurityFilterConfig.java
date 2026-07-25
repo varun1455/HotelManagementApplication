@@ -36,6 +36,7 @@ public class SecurityFilterConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/admin/**").hasRole("HOTEL_MANAGER")
+                        .requestMatchers("/system/**").hasRole("SYSTEM_ADMIN")
                         .requestMatchers("/bookings/**").authenticated()
                         .anyRequest().permitAll()
                 );
