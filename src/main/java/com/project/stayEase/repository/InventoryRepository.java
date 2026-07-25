@@ -170,5 +170,33 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             @Param("numberOfRooms") Integer numberOfRooms
     );
 
+
+
+    @Query("""
+             SELECT MAX(i.date)
+             FROM Inventory i
+             WHERE i.room.hotel.id = :hotelId
+             AND i.dynamicPrice IS NOT NULL
+""")
+    LocalDate findLastDynamicPriceDateByHotel(@Param("hotelId") Long hotelId);
+
+
+    @Query("""
+    SELECT MAX(i.date)
+    FROM Inventory i
+    WHERE i.dynamicPrice IS NOT NULL
+""")
+    LocalDate findLastDynamicPriceDate();
+
+
+
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
+
+
+    @Query("""
+     SELECT i
+     FROM Inventory i
+     WHERE i.date IN :dates
+""")
+    List<Inventory> findByDates(@Param("dates") List<LocalDate> dates);
 }

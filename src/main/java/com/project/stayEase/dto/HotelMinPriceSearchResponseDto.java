@@ -1,0 +1,18 @@
+package com.project.stayEase.dto;
+
+import com.project.stayEase.entity.HotelContactInfo;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+public class HotelMinPriceSearchResponseDto {
+
+    private Long id;
+    private String name;
+    private String city;
+    private String[] photos;
+    private HotelContactInfo contactInfo;
+    private BigDecimal startingFrom;
+}
