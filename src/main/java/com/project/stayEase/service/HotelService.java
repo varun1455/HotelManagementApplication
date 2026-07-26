@@ -4,6 +4,8 @@ import com.project.stayEase.dto.HotelInfoDto;
 import com.project.stayEase.dto.HotelRequestDto;
 import com.project.stayEase.dto.HotelResponseDto;
 
+import java.util.List;
+
 public interface HotelService {
 
     HotelResponseDto createNewHotel(HotelRequestDto hotelRequestDto);
@@ -17,4 +19,6 @@ public interface HotelService {
     void deleteHotelById(Long id);
 
     HotelInfoDto findHotelInfo(Long hotelId);
+
+    List<HotelResponseDto> getAllHotelsOfOwner();
 }

@@ -46,9 +46,6 @@ public class Inventory {
     @Column(nullable = false)
     private Integer totalCount;
 
-    @Column(nullable = false, precision = 5, scale = 2)
-    private BigDecimal surgeFactor;
-
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 

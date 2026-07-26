@@ -1,10 +1,7 @@
 package com.project.stayEase.service;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.BookingRequestDto;
-import com.project.stayEase.dto.BookingResponseDto;
-import com.project.stayEase.dto.GuestRequestDto;
-import com.project.stayEase.dto.PaymentSessionDto;
+import com.project.stayEase.dto.*;
 import com.project.stayEase.entity.*;
 import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.entity.enums.PaymentStatus;
@@ -185,7 +182,7 @@ public class BookingServiceImpl implements BookingService{
             }
 
 
-           if("paid".equals(session.getPaymentStatus())){
+           if("paid".equals(session.getPaymentStatus())) {
                payment.setPaymentIntentId(session.getPaymentIntent());
                payment.setPaymentStatus(PaymentStatus.APPROVED);
                Booking booking = payment.getBooking();
@@ -267,6 +264,22 @@ public class BookingServiceImpl implements BookingService{
             inventoryRepository.releasedInventoryForExpiredBooking(booking.getRoom().getId(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getRoomsCount());
             booking.setBookingStatus(BookingStatus.EXPIRED);
         }
+
+    }
+
+    @Override
+    public List<BookingsPerHotelDto> getAllBookingsByHotelId(Long hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + hotelId));
+        if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
+            throw new AccessDeniedException("You are not Owner of Hotel");
+        }
+
+        List<Booking> bookings = bookingRepository.findByHotel(hotel);
+
+        return bookings.stream()
+                .map(booking -> modelMapper.map(booking, BookingsPerHotelDto.class))
+                .collect(Collectors.toList());
+
 
     }
 

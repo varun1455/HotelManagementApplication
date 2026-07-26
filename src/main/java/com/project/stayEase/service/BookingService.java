@@ -1,9 +1,6 @@
 package com.project.stayEase.service;
 
-import com.project.stayEase.dto.BookingRequestDto;
-import com.project.stayEase.dto.BookingResponseDto;
-import com.project.stayEase.dto.GuestRequestDto;
-import com.project.stayEase.dto.PaymentSessionDto;
+import com.project.stayEase.dto.*;
 import com.stripe.model.Event;
 
 import java.util.List;
@@ -19,4 +16,7 @@ public interface BookingService {
     public void capturePaymentEvent(Event event);
 
     void cancelMyBooking(Long bookingId);
+
+    List<BookingsPerHotelDto> getAllBookingsByHotelId(Long hotelId);
+
 }

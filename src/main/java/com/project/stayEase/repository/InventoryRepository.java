@@ -1,6 +1,5 @@
 package com.project.stayEase.repository;
 
-import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;

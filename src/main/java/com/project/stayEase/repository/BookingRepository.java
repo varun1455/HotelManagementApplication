@@ -1,6 +1,7 @@
 package com.project.stayEase.repository;
 
 import com.project.stayEase.entity.Booking;
+import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,4 +37,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("currentTime") LocalDateTime currentTime
     );
 
+    List<Booking> findByHotel(Hotel hotel);
 }

@@ -3,14 +3,17 @@ package com.project.stayEase.service;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.*;
-import com.project.stayEase.entity.Hotel;
-import com.project.stayEase.entity.Inventory;
-import com.project.stayEase.entity.Room;
+import com.project.stayEase.entity.*;
 import com.project.stayEase.repository.HotelMinPriceRepository;
+import com.project.stayEase.repository.HotelPricingConfigurationRepository;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.repository.InventoryRepository;
+import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.service.Factory.PricingContextFactory;
 import com.project.stayEase.util.HotelSearchProjection;
+import com.project.stayEase.util.PricingContext;
 import com.project.stayEase.util.RoomAvailabilityProjection;
+import com.stripe.model.v2.core.AccountPerson;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -34,6 +37,11 @@ public class InventoryServiceImpl implements InventoryService {
     private final ModelMapper modelMapper;
     private final HotelMinPriceRepository hotelMinPriceRepository;
     private final HotelRepository hotelRepository;
+    private final SecurityUtils securityUtils;
+    private final PricingUpdateService pricingUpdateService;
+    private final PricingContextFactory pricingContextFactory;
+    private final HotelPricingConfigurationService hotelPricingConfigurationService;
+    private final HotelPricingConfigurationRepository hotelPricingConfigurationRepository;
 
     @Override
     public void initializeRoomForHalfYear(Room room) {
@@ -48,7 +56,6 @@ public class InventoryServiceImpl implements InventoryService {
                         .city(room.getHotel().getCity())
                         .date(today)
                         .price(room.getBasePrice())
-                        .surgeFactor(BigDecimal.ONE)
                         .totalCount(room.getTotalCount())
                         .closed(false)
                         .build();
@@ -148,6 +155,55 @@ public class InventoryServiceImpl implements InventoryService {
                 .toList();
 
         return new PageImpl<>(hotelSearchResponse, pageable, hotelPage.getTotalElements());
+
+    }
+
+    @Override
+    public void updatePricingConfiguration(HotelPricingConfigurationDto dto) {
+        User user = securityUtils.getCurrentuser();
+
+        HotelPricingConfiguration hotelPricingConfiguration = hotelPricingConfigurationService.getOrCreate(user);
+
+
+        if (dto.getSurgeFactor() != null) {
+            hotelPricingConfiguration.setSurgeFactor(dto.getSurgeFactor());
+        }
+
+        if (dto.getUrgencyDaysThreshold() != null) {
+            hotelPricingConfiguration.setUrgencyDaysThreshold(dto.getUrgencyDaysThreshold());
+        }
+
+        if (dto.getUrgencyFactor() != null) {
+            hotelPricingConfiguration.setUrgencyFactor(dto.getUrgencyFactor());
+        }
+
+        if (dto.getOccupancyThreshold() != null) {
+            hotelPricingConfiguration.setOccupancyThreshold(dto.getOccupancyThreshold());
+        }
+
+        if (dto.getOccupancyFactor() != null) {
+            hotelPricingConfiguration.setOccupancyFactor(dto.getOccupancyFactor());
+        }
+        hotelPricingConfigurationRepository.save(hotelPricingConfiguration);
+
+
+        List<Hotel> hotels = hotelRepository.findByOwner(user);
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = inventoryRepository.findLastDynamicPriceDate();
+
+        PricingContext context =
+                pricingContextFactory.findHolidaysAndBuildContext(hotelPricingConfiguration, startDate, endDate);
+
+        for(Hotel hotel: hotels){
+            List<Inventory> inventories = inventoryRepository.findByHotelAndDateBetween(hotel, startDate, endDate);
+
+
+
+            pricingUpdateService.updateInventoryPrices(inventories,context);
+            pricingUpdateService.updateHotelMinPrice(hotel, inventories);
+        }
+
 
     }
 

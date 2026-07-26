@@ -1,14 +1,19 @@
 package com.project.stayEase.controller;
 
 import com.project.stayEase.advices.ApiResponse;
+import com.project.stayEase.dto.BookingsPerHotelDto;
 import com.project.stayEase.dto.HotelRequestDto;
 import com.project.stayEase.dto.HotelResponseDto;
+import com.project.stayEase.entity.Hotel;
+import com.project.stayEase.service.BookingService;
 import com.project.stayEase.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/hotels")
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class HotelController {
 
     private final HotelService hotelService;
+    private final BookingService bookingService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<HotelResponseDto>> createHotel(@RequestBody HotelRequestDto hotelRequestDto) {
@@ -51,5 +57,16 @@ public class HotelController {
     public ResponseEntity<Void> deleteHotel(@PathVariable Long hotelId){
         hotelService.deleteHotelById(hotelId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<HotelResponseDto>>> getAllHotels(){
+        return new ResponseEntity<>(ApiResponse.successResponse(hotelService.getAllHotelsOfOwner()), HttpStatus.OK);
+    }
+
+    @GetMapping("/{hotelId}/bookings")
+    public ResponseEntity<ApiResponse<List<BookingsPerHotelDto>>> getAllBookingsOfHotel(@PathVariable Long hotelId){
+            return new ResponseEntity<>(ApiResponse.successResponse(bookingService.getAllBookingsByHotelId(hotelId)), HttpStatus.OK) ;
+
     }
 }

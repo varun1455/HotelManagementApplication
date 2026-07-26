@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
 public class UrgencyPricingStrategy implements PricingStrategy{
@@ -19,7 +20,12 @@ public class UrgencyPricingStrategy implements PricingStrategy{
         BigDecimal price = pricingStrategy.calculatePrice(inventory, pricingContext);
         LocalDate today = LocalDate.now();
 
-        if(inventory.getDate().isBefore(today.plusDays(7))){
+        int urgencyDays = pricingContext.getPricingConfiguration()
+                .getUrgencyDaysThreshold();
+
+        LocalDate urgencyCutoff = today.plusDays(urgencyDays);
+
+        if(inventory.getDate().isBefore(urgencyCutoff)){
             price = price.multiply(BigDecimal.valueOf(1.8));
         }
         return price;
