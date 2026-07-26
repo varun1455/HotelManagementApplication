@@ -16,18 +16,6 @@ public interface HolidayRepository extends JpaRepository<Holiday, Long> {
 
 
     @Query("""
-      SELECT h.date
-      FROM Holiday h
-      WHERE h.type = :holidayType
-        AND h.date between :startDate AND :endDate
-""")
-    List<LocalDate> findDatesByHolidayTypeAndDateBetween(
-            @Param("holidayType") HolidayType holidayType,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
-    );
-
-    @Query("""
         SELECT h
         FROM Holiday h
         WHERE h.date IN :dates
@@ -35,5 +23,14 @@ public interface HolidayRepository extends JpaRepository<Holiday, Long> {
     List<Holiday> findByDateIn(@Param("dates") List<LocalDate> dates);
 
 
-
+    @Query("""
+      SELECT h
+      FROM Holiday h
+      WHERE h.type = :holidayType
+        AND h.date between :startDate AND :endDate
+""")
+    List<Holiday> findByTypeAndDateBetween(
+            @Param("holidayType") HolidayType holidayType,
+             @Param("startDate" )LocalDate today,
+            @Param("endDate") LocalDate lastCalculated);
 }

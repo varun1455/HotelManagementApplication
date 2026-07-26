@@ -4,6 +4,7 @@ package com.project.stayEase.service;
 import com.project.stayEase.entity.*;
 import com.project.stayEase.entity.enums.HolidayType;
 import com.project.stayEase.repository.*;
+import com.project.stayEase.service.Factory.PricingContextFactory;
 import com.project.stayEase.service.strategy.PricingService;
 import com.project.stayEase.util.PricingContext;
 import jakarta.transaction.Transactional;
@@ -28,7 +29,8 @@ public class PricingUpdateService {
         private final InventoryRepository inventoryRepository;
         private final PricingService pricingService;
         private final HolidayRepository holidayRepository;
-        private final HolidayPricingRuleRepository holidayPricingRuleRepository;
+        private final PricingContextFactory pricingContextFactory;
+        private final HotelPricingConfigurationService hotelPricingConfigurationService;
 
 
         @Scheduled(cron = "0 * * * * *")
@@ -36,22 +38,6 @@ public class PricingUpdateService {
             updatePrices();
         }
 
-    private PricingContext buildPricingContext(Map<LocalDate, HolidayType> holidays) {
-
-        Map<HolidayType, BigDecimal> holidayFactors =
-                holidayPricingRuleRepository.findAll()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                HolidayPricingRule::getHolidayType,
-                                HolidayPricingRule::getPriceFactor
-                        ));
-
-        PricingContext context = new PricingContext();
-        context.setHolidays(holidays);
-        context.setHolidayFactors(holidayFactors);
-
-        return context;
-    }
 
         public void updatePrices(){
             int page = 0;
@@ -75,31 +61,45 @@ public class PricingUpdateService {
             LocalDate today = LocalDate.now();
             LocalDate lastCalculated = inventoryRepository.findLastDynamicPriceDate();
 
-            List<LocalDate> dates = holidayRepository.findDatesByHolidayTypeAndDateBetween(
-                    holidayPricingRule.getHolidayType(), today, lastCalculated
-            );
+            List<Holiday> holidays =
+                    holidayRepository.findByTypeAndDateBetween(
+                            holidayPricingRule.getHolidayType(),
+                            today,
+                            lastCalculated
+                    );
 
+            List<LocalDate> dates = holidays.stream()
+                    .map(Holiday::getDate)
+                    .toList();
 
             List<Inventory> inventoryList = inventoryRepository.findByDates(dates);
 
-            Map<LocalDate, HolidayType> holidays = holidayRepository.findByDateIn(dates).stream()
+            Map<Hotel, List<Inventory>> inventoriesByHotel = inventoryList.stream()
+                    .collect(Collectors.groupingBy(
+                                    Inventory::getHotel
+                            )
+            );
+
+            Map<LocalDate, HolidayType> holidayMap = holidays.stream()
                     .collect(Collectors.toMap(
                             Holiday::getDate,
                             Holiday::getType
-                    )
-            );
+                    ));
 
-            PricingContext context = buildPricingContext(holidays);
 
-            updateInventoryPrices(inventoryList, context);
-            Map<Hotel, List<Inventory>> inventoriesByHotel = inventoryList.stream()
-                    .collect(Collectors.groupingBy(
-                            Inventory::getHotel
-                    )
-            );
 
-            inventoriesByHotel.forEach(this::updateHotelMinPrice);
+            inventoriesByHotel.forEach((hotel, inventories) -> {
 
+                HotelPricingConfiguration configuration =
+                        hotelPricingConfigurationService.getOrCreate(hotel.getOwner());
+
+                PricingContext context =
+                        pricingContextFactory.buildHolidayPricingContext(holidayMap,configuration);
+
+                updateInventoryPrices(inventories, context);
+
+                updateHotelMinPrice(hotel, inventories);
+            });
         }
         private void updateHotelPrices(Hotel hotel) {
 
@@ -118,26 +118,31 @@ public class PricingUpdateService {
                 endDate = startDate;
             }
 
-            Map<LocalDate, HolidayType> holidayList = holidayRepository.findByDateBetween(startDate, endDate).stream()
-                    .collect(Collectors.toMap(
-                            Holiday::getDate,
-                            Holiday::getType
-
-                    ));
-
-            PricingContext context = buildPricingContext(holidayList);
-
             List<Inventory> inventories = inventoryRepository.findByHotelAndDateBetween(hotel,startDate,endDate);
 
             if (inventories.isEmpty()) {
                 return;
             }
 
+            HotelPricingConfiguration configuration =
+                    hotelPricingConfigurationService.getOrCreate(
+                            hotel.getOwner()
+            );
+
+
+            PricingContext context =
+                    pricingContextFactory.findHolidaysAndBuildContext(
+                            configuration,
+                            startDate,
+                            endDate
+                    );
+
+
             updateInventoryPrices(inventories, context);
             updateHotelMinPrice(hotel, inventories);
         }
 
-        private void updateHotelMinPrice(Hotel hotel, List<Inventory> inventoryList){
+        public void updateHotelMinPrice(Hotel hotel, List<Inventory> inventoryList){
 
             Map<LocalDate, BigDecimal> dailyMinPrice = inventoryList.stream()
                     .collect(Collectors.
@@ -167,7 +172,7 @@ public class PricingUpdateService {
         }
 
 
-        private void updateInventoryPrices(List<Inventory> inventoryList,PricingContext pricingContext){
+        public void updateInventoryPrices(List<Inventory> inventoryList,PricingContext pricingContext){
 
             inventoryList.forEach(inventory ->{
                         BigDecimal dynamicPrice = pricingService.calculateDynamicPricing(inventory,pricingContext);

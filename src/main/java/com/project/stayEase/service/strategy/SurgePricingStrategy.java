@@ -15,6 +15,6 @@ public class SurgePricingStrategy implements PricingStrategy{
     @Override
     public BigDecimal calculatePrice(Inventory inventory, PricingContext pricingContext) {
         BigDecimal price = pricingStrategy.calculatePrice(inventory, pricingContext);
-        return price.multiply(inventory.getSurgeFactor());
+        return price.multiply(pricingContext.getPricingConfiguration().getSurgeFactor());
     }
 }

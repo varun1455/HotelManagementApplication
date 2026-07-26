@@ -109,4 +109,15 @@ public class HotelServiceImpl implements HotelService{
 
         return new HotelInfoDto(modelMapper.map(hotel, HotelResponseDto.class), rooms);
     }
+
+    @Override
+    public List<HotelResponseDto> getAllHotelsOfOwner() {
+        User user = securityUtils.getCurrentuser();
+        List<Hotel> hotels = hotelRepository.findByOwner(user);
+
+        return hotels.stream()
+                .map(hotel -> modelMapper.map(hotel, HotelResponseDto.class))
+                .toList();
+
+    }
 }

@@ -1,5 +1,6 @@
 package com.project.stayEase.util;
 
+import com.project.stayEase.entity.HotelPricingConfiguration;
 import com.project.stayEase.entity.enums.HolidayType;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,5 +15,6 @@ import java.util.Map;
 public class PricingContext {
     private Map<LocalDate, HolidayType> holidays;
     private Map<HolidayType, BigDecimal> holidayFactors;
+    private HotelPricingConfiguration pricingConfiguration;
 
 }

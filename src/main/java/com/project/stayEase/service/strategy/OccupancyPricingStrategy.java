@@ -3,7 +3,6 @@ package com.project.stayEase.service.strategy;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.util.PricingContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
@@ -14,10 +13,13 @@ public class OccupancyPricingStrategy implements PricingStrategy {
 
     @Override
     public BigDecimal calculatePrice(Inventory inventory, PricingContext pricingContext) {
+
         BigDecimal price = pricingStrategy.calculatePrice(inventory, pricingContext);
-        double occupancy_rate = (double) inventory.getBookedCount()/inventory.getTotalCount();
-        if(occupancy_rate>=0.8){
-            price = price.multiply(BigDecimal.valueOf(1.5));
+
+        double occupancy_rate = (double) (inventory.getBookedCount()/inventory.getTotalCount())*100;
+
+        if(occupancy_rate>=pricingContext.getPricingConfiguration().getOccupancyThreshold()){
+            price = price.multiply(pricingContext.getPricingConfiguration().getOccupancyFactor());
 
         }
         return price;
