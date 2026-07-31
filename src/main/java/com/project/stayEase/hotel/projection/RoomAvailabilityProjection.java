@@ -1,4 +1,4 @@
-package com.project.stayEase.util;
+package com.project.stayEase.hotel.projection;
 
 import com.project.stayEase.entity.Room;
 

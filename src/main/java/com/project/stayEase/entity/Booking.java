@@ -1,6 +1,5 @@
 package com.project.stayEase.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.stayEase.entity.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;

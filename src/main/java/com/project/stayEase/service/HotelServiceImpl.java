@@ -8,6 +8,7 @@ import com.project.stayEase.dto.RoomResponseDto;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.User;
+import com.project.stayEase.inventory.InventoryService;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.security.SecurityUtils;
 import jakarta.transaction.Transactional;
@@ -80,7 +81,7 @@ public class HotelServiceImpl implements HotelService{
         }
         hotel.setActive(true);
         for(Room room: hotel.getRooms()){
-            inventoryService.initializeRoomForHalfYear(room);
+            inventoryService.initializeRoom(room);
         }
 
     }
@@ -93,7 +94,7 @@ public class HotelServiceImpl implements HotelService{
             throw new AccessDeniedException("You are not allowed to delete this hotel");
         }
         for(Room room: hotel.getRooms()){
-            inventoryService.deleteAllInventoriesForRoom(room);
+            inventoryService.deleteInventories(room);
         }
         hotelRepository.deleteById(id);
 

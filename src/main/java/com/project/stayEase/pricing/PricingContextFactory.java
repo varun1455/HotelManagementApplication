@@ -1,4 +1,4 @@
-package com.project.stayEase.service.Factory;
+package com.project.stayEase.pricing;
 
 import com.project.stayEase.entity.Holiday;
 import com.project.stayEase.entity.HolidayPricingRule;

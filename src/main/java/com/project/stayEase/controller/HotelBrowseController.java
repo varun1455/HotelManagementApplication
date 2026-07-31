@@ -3,10 +3,11 @@ package com.project.stayEase.controller;
 
 import com.project.stayEase.advices.ApiResponse;
 import com.project.stayEase.dto.HotelInfoDto;
-import com.project.stayEase.dto.HotelResponseDto;
 import com.project.stayEase.dto.HotelSearchRequestDto;
+import com.project.stayEase.dto.HotelSearchResponseDto;
+import com.project.stayEase.hotel.HotelSearchService;
 import com.project.stayEase.service.HotelService;
-import com.project.stayEase.service.InventoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class HotelBrowseController {
 
-    private final InventoryService inventoryService;
+    private final HotelSearchService hotelSearchService;
     private final HotelService hotelService;
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<?>>> searchHotels(@RequestBody HotelSearchRequestDto hotelSearchRequestDto){
+    public ResponseEntity<ApiResponse<Page<HotelSearchResponseDto>>> searchHotels(@Valid @RequestBody HotelSearchRequestDto hotelSearchRequestDto){
 
-        Page<?> page = inventoryService.searchHotels(hotelSearchRequestDto);
+        Page<HotelSearchResponseDto> page = hotelSearchService.search(hotelSearchRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(page), HttpStatus.OK);
     }
 
