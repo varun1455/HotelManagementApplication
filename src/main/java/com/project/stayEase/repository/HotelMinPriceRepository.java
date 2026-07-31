@@ -2,7 +2,7 @@ package com.project.stayEase.repository;
 
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.HotelMinPrice;
-import com.project.stayEase.util.HotelSearchProjection;
+import com.project.stayEase.hotel.projection.HotelSearchProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,12 +17,12 @@ public interface HotelMinPriceRepository extends JpaRepository<HotelMinPrice, Lo
 
 
     @Query("""
-       SELECT new com.project.stayEase.util.HotelSearchProjection(hmp.hotel.id, MIN(hmp.price))
+       SELECT new com.project.stayEase.hotel.projection.HotelSearchProjection(hmp.hotel, MIN(hmp.price))
        FROM HotelMinPrice hmp
        WHERE hmp.hotel.city = :city
              AND hmp.date BETWEEN :startDate AND :endDate
              AND hmp.hotel.active = true
-       GROUP BY hmp.hotel.id
+       GROUP BY hmp.hotel
 """)
     Page<HotelSearchProjection>findHotelsWithAvailableInventory(
             @Param("city") String city,

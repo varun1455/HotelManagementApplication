@@ -7,6 +7,7 @@ import com.project.stayEase.entity.BedType;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.RoomType;
+import com.project.stayEase.inventory.InventoryService;
 import com.project.stayEase.repository.BedTypeRepository;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.repository.RoomRepository;
@@ -49,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.save(room);
 
         if(hotel.isActive()){
-            inventoryService.initializeRoomForHalfYear(room);
+            inventoryService.initializeRoom(room);
         }
         return modelMapper.map(room, RoomResponseDto.class);
     }
@@ -96,7 +97,7 @@ public class RoomServiceImpl implements RoomService {
         if(room.getHotel().getOwner().getId().equals(securityUtils.getCurrentUserId())){
             throw new AccessDeniedException("You are not allowed to delete this room");
         }
-        inventoryService.deleteAllInventoriesForRoom(room);
+        inventoryService.deleteInventories(room);
         roomRepository.deleteById(roomId);
     }
 }

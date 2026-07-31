@@ -7,6 +7,7 @@ import com.project.stayEase.dto.BookingResponseDto;
 import com.project.stayEase.dto.GuestRequestDto;
 import com.project.stayEase.dto.PaymentSessionDto;
 import com.project.stayEase.service.BookingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class HotelBookingController {
     private final BookingService bookingService;
 
     @PostMapping("/init")
-    public ResponseEntity<ApiResponse<BookingResponseDto>> initializeBooking(@RequestBody BookingRequestDto bookingRequestDto){
+    public ResponseEntity<ApiResponse<BookingResponseDto>> initializeBooking(@Valid @RequestBody BookingRequestDto bookingRequestDto){
         BookingResponseDto bookingResponse =
                 bookingService.initializeBooking(bookingRequestDto);
 

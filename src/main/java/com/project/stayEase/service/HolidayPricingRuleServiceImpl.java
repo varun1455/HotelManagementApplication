@@ -3,6 +3,8 @@ package com.project.stayEase.service;
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.UpdatePriceFactorDto;
 import com.project.stayEase.entity.HolidayPricingRule;
+import com.project.stayEase.pricing.HolidayPricingRefreshService;
+import com.project.stayEase.pricing.PricingUpdateService;
 import com.project.stayEase.repository.HolidayPricingRuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ import java.util.List;
 public class HolidayPricingRuleServiceImpl implements HolidayPricingRuleService{
 
     private final HolidayPricingRuleRepository holidayPricingRuleRepository;
-    private final PricingUpdateService pricingUpdateService;
+    private final HolidayPricingRefreshService holidayPricingRefreshService;
 
 
     @Override
@@ -23,7 +25,7 @@ public class HolidayPricingRuleServiceImpl implements HolidayPricingRuleService{
         holidayPricingRule.setPriceFactor(priceFactorDto.getPriceFactor());
         holidayPricingRuleRepository.save(holidayPricingRule);
 
-        pricingUpdateService.updateDynamicPriceOnHolidayPricingFactorUpdate(holidayPricingRule);
+        holidayPricingRefreshService.updateDynamicPriceOnHolidayPricingFactor(holidayPricingRule);
 
     }
 }
