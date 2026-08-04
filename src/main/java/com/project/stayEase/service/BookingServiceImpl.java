@@ -7,10 +7,9 @@ import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.entity.enums.PaymentStatus;
 import com.project.stayEase.repository.*;
 import com.project.stayEase.security.SecurityUtils;
-import com.project.stayEase.service.strategy.PricingService;
+import com.project.stayEase.service.pricing.strategy.PricingService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.RefundCreateParams;
@@ -21,15 +20,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

@@ -3,7 +3,7 @@ package com.project.stayEase.repository;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;
-import com.project.stayEase.hotel.projection.RoomAvailabilityProjection;
+import com.project.stayEase.search.projection.RoomAvailabilityProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,14 +30,14 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 AND i.closed = false
                 AND (i.totalCount - i.bookedCount-i.reservedCount) >= :roomsCount
            GROUP BY i.hotel, i.room
-           HAVING COUNT(i.date) = :totalDays
+           HAVING COUNT(i.date) = :totalNights
            """)
     Page<Hotel> findHotelsWithAvailableInventory(
             @Param("city") String city,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("roomsCount") Integer roomsCount,
-            @Param("totalDays") Long totalDays,
+            @Param("totalNights") Long totalNights,
             Pageable pageable
     );
 
@@ -53,7 +53,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 AND i.closed = false
             GROUP BY i.hotel, i.room
             HAVING
-                COUNT(i.date) = :totalDays
+                COUNT(i.date) = :totalNights
                 AND MIN(i.totalCount - i.bookedCount - i.reservedCount) >= :roomsCount
             
 """) List<RoomAvailabilityProjection> findAvailableRooms(
@@ -61,7 +61,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,
         @Param("roomsCount") Integer roomsCount,
-        @Param("totalDays") Long totalDays
+        @Param("totalNights") Long totalNights
 
     );
 

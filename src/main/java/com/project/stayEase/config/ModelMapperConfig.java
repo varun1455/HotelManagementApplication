@@ -1,6 +1,10 @@
 package com.project.stayEase.config;
 
 import com.project.stayEase.dto.*;
+import com.project.stayEase.dto.roomMappers.BedTypeResponseDto;
+import com.project.stayEase.dto.roomMappers.RoomRequestDto;
+import com.project.stayEase.dto.roomMappers.RoomResponseDto;
+import com.project.stayEase.dto.roomMappers.RoomTypeResponseDto;
 import com.project.stayEase.entity.BedType;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.RoomType;
