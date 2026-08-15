@@ -2,7 +2,7 @@ package com.project.stayEase.entity.enums;
 
 public enum BookingStatus {
     RESERVED,
-    ADDING_GUESTS,
+    GUESTS_ADDED,
     PAYMENT_PENDING,
     CONFIRMED,
     CANCELLED,

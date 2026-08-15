@@ -1,10 +1,10 @@
 package com.project.stayEase.controller.hotel;
 
 import com.project.stayEase.advices.ApiResponse;
-import com.project.stayEase.dto.BookingsPerHotelDto;
+import com.project.stayEase.dto.bookingMappers.QueryBookingsDto;
 import com.project.stayEase.dto.hotelMappers.HotelRequestDto;
 import com.project.stayEase.dto.hotelMappers.HotelResponseDto;
-import com.project.stayEase.service.BookingService;
+import com.project.stayEase.service.booking.services.query.BookingQueryService;
 import com.project.stayEase.service.hotel.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.List;
 public class HotelController {
 
     private final HotelService hotelService;
-    private final BookingService bookingService;
+    private final BookingQueryService bookingQueryService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<HotelResponseDto>> createHotel(@RequestBody HotelRequestDto hotelRequestDto) {
@@ -64,8 +64,8 @@ public class HotelController {
     }
 
     @GetMapping("/{hotelId}/bookings")
-    public ResponseEntity<ApiResponse<List<BookingsPerHotelDto>>> getAllBookingsOfHotel(@PathVariable Long hotelId){
-            return new ResponseEntity<>(ApiResponse.successResponse(bookingService.getAllBookingsByHotelId(hotelId)), HttpStatus.OK) ;
+    public ResponseEntity<ApiResponse<List<QueryBookingsDto>>> getAllBookingsOfHotel(@PathVariable Long hotelId){
+            return new ResponseEntity<>(ApiResponse.successResponse(bookingQueryService.getAllBookingsByHotelId(hotelId)), HttpStatus.OK) ;
 
     }
 }

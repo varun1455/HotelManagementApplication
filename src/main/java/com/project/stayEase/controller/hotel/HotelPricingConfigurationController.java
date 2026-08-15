@@ -16,7 +16,6 @@ public class HotelPricingConfigurationController {
 
     private final HotelPricingConfigurationService hotelPricingConfigurationService;
 
-
     @PatchMapping("/priceConfig")
     public ResponseEntity<Void> updateHotelPricingConfiguration(@RequestBody HotelPricingConfigurationDto dto){
 

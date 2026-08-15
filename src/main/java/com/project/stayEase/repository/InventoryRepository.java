@@ -70,7 +70,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             SELECT i
             FROM Inventory i
             WHERE i.room.id = :roomId
-                AND i.date BETWEEN :startDate AND :endDate
+                AND i.date >= :startDate
+                AND i.date < :endDate
                 AND i.closed = false
                 AND (i.totalCount - i.bookedCount- i.reservedCount) >= :roomsCount
             """)
@@ -89,7 +90,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
         UPDATE Inventory i
         SET i.reservedCount = i.reservedCount + :numberOfRooms
         WHERE i.room.id = :roomId
-        AND i.date BETWEEN :startDate AND :endDate
+        AND i.date >= :startDate
+        AND i.date < :endDate
         AND (i.totalCount - i.bookedCount - i.reservedCount) >= :numberOfRooms
         AND i.closed = false
  
@@ -106,9 +108,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
        UPDATE Inventory i
        SET i.reservedCount = i.reservedCount - :numberOfRooms
        WHERE i.room.id = :roomId
-       AND i.date BETWEEN :startDate AND :endDate
-       AND i.reservedCount >= :numberOfRooms
-       AND i.closed = false
+         AND i.date >= :startDate
+         AND i.date < :endDate
+         AND i.reservedCount >= :numberOfRooms
+         AND i.closed = false
 """)
     void releasedInventoryForExpiredBooking(
     @Param("roomId") Long roomId,
@@ -123,7 +126,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             SELECT i
             FROM Inventory i
             WHERE i.room.id = :roomId
-                AND i.date BETWEEN :startDate AND :endDate
+                AND i.date >= :startDate
+                AND i.date < :endDate
                 AND (i.totalCount - i.bookedCount) >= :roomsCount
                 AND i.closed = false
             """)
@@ -143,10 +147,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 SET i.reservedCount = i.reservedCount - :numberOfRooms,
                     i.bookedCount = i.bookedCount + :numberOfRooms
                 WHERE i.room.id = :roomId
-                AND i.date BETWEEN :startDate AND :endDate
-                AND (i.totalCount - i.bookedCount) >= :numberOfRooms
-                AND i.reservedCount >= :numberOfRooms
-                AND i.closed = false
+                    AND i.date >= :startDate
+                    AND i.date < :endDate
+                    AND (i.totalCount - i.bookedCount) >= :numberOfRooms
+                    AND i.reservedCount >= :numberOfRooms
+                    AND i.closed = false
     """
     )
     void confirmBooking(
@@ -158,13 +163,15 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
 
     /* Modifying the bookedCount if user is cancelling the confirmed booking */
+    @Modifying
     @Query("""
             UPDATE Inventory i
             SET i.bookedCount = i.bookedCount - :numberOfRooms
             WHERE i.room.id = :roomId
-            AND i.date BETWEEN :startDate AND :endDate
-            AND i.bookedCount >= :numberOfRooms
-            AND i.closed = false
+              AND i.date >= :startDate
+              AND i.date < :endDate
+              AND i.bookedCount >= :numberOfRooms
+              AND i.closed = false
 """)int cancelBooking(
             @Param("roomId") Long roomId,
             @Param("startDate") LocalDate startDate,

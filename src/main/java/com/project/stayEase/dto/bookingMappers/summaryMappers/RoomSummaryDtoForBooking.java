@@ -1,4 +1,4 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.dto.bookingMappers.summaryMappers;
 
 import lombok.Data;
 

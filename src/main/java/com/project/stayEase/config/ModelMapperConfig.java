@@ -1,6 +1,6 @@
 package com.project.stayEase.config;
 
-import com.project.stayEase.dto.*;
+import com.project.stayEase.dto.bookingMappers.summaryMappers.RoomSummaryDtoForBooking;
 import com.project.stayEase.dto.roomMappers.BedTypeResponseDto;
 import com.project.stayEase.dto.roomMappers.RoomRequestDto;
 import com.project.stayEase.dto.roomMappers.RoomResponseDto;
