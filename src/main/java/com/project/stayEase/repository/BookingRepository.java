@@ -18,11 +18,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
         SELECT b
         FROM Booking b
-        where b.bookingStatus = :status
+        where b.bookingStatus IN :expirableStatuses
         AND b.reservedUntil <= :currentTime
 """)
     List<Booking> findExpiredBookings(
-            @Param("status")BookingStatus status,
+            @Param("expirableStatuses")List<BookingStatus> expirableStatuses,
             @Param("currentTime") LocalDateTime currentTime
     );
 

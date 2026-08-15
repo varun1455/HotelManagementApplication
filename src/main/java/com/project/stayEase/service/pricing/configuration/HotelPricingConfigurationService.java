@@ -1,6 +1,7 @@
 package com.project.stayEase.service.pricing.configuration;
 
 
+import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.hotelMappers.HotelPricingConfigurationDto;
 import com.project.stayEase.entity.HotelPricingConfiguration;
 import com.project.stayEase.entity.User;
@@ -19,13 +20,13 @@ public class HotelPricingConfigurationService {
     private final SecurityUtils securityUtils;
     private final PricingConfigurationUpdateService pricingConfigurationUpdateService;
 
-    public HotelPricingConfiguration getOrCreate(User owner) {
+    public HotelPricingConfiguration get(User owner) {
         return hotelPricingConfigurationRepository.findByOwner(owner)
-                .orElseGet(() -> initializeDefaultHotelPriceConfigurationForHotelManager(owner));
+                .orElseThrow(()->new ResourceNotFoundException("Hotel Price Configuration not exist for current admin"));
     }
 
 
-    public HotelPricingConfiguration initializeDefaultHotelPriceConfigurationForHotelManager(User owner){
+    public void initializeDefaultHotelPriceConfigurationForHotelManager(User owner){
         HotelPricingConfiguration config = new HotelPricingConfiguration();
         config.setOwner(owner);
         config.setSurgeFactor(BigDecimal.ONE);
@@ -34,13 +35,13 @@ public class HotelPricingConfigurationService {
         config.setOccupancyThreshold(80);
         config.setOccupancyFactor(BigDecimal.valueOf(1.15));
 
-        return hotelPricingConfigurationRepository.save(config);
+         hotelPricingConfigurationRepository.save(config);
     }
 
     public void updateHotelPricingConfiguration(HotelPricingConfigurationDto dto){
         User currentUser = securityUtils.getCurrentuser();
 
-        HotelPricingConfiguration hotelPricingConfiguration = getOrCreate(currentUser);
+        HotelPricingConfiguration hotelPricingConfiguration = get(currentUser);
 
 
         if (dto.getSurgeFactor() != null) {

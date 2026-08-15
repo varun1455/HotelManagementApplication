@@ -1,5 +1,7 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.dto.bookingMappers;
 
+import com.project.stayEase.dto.bookingMappers.guestMappers.GuestResponseDto;
+import com.project.stayEase.dto.UserResponseDto;
 import com.project.stayEase.entity.enums.BookingStatus;
 import lombok.Data;
 
@@ -10,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class BookingsPerHotelDto {
+public class QueryBookingsDto {
     private Long id;
     private Integer roomsCount;
     private UserResponseDto user;

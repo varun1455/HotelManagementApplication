@@ -100,4 +100,11 @@ public class RoomServiceImpl implements RoomService {
         inventoryService.deleteInventories(room);
         roomRepository.deleteById(roomId);
     }
+
+    @Override
+    public Room getRoomOfHotel(Long id) {
+         return roomRepository.findById(id).
+                orElseThrow(()->new ResourceNotFoundException("Room not found with id " + id));
+
+    }
 }

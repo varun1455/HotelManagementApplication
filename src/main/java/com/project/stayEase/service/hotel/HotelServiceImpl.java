@@ -121,4 +121,12 @@ public class HotelServiceImpl implements HotelService {
                 .toList();
 
     }
+
+    public Hotel getActiveHotel(Long id){
+
+        return hotelRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Hotel not found"));
+    }
 }

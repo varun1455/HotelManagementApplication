@@ -7,6 +7,7 @@ import com.project.stayEase.dto.UserResponseDto;
 import com.project.stayEase.entity.User;
 import com.project.stayEase.entity.enums.Role;
 import com.project.stayEase.repository.UserRepository;
+import com.project.stayEase.service.pricing.configuration.HotelPricingConfigurationService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AuthService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final HotelPricingConfigurationService hotelPricingConfigurationService;
     private final JwtService jwtService;
 
     public UserResponseDto signup(SignUpRequestDto signUpRequestDto){
@@ -41,9 +43,14 @@ public class AuthService {
         newUser.setRoles(Set.of(Role.GUEST, Role.HOTEL_MANAGER, Role.SYSTEM_ADMIN));
         newUser.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
 
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
 
-        return modelMapper.map(newUser, UserResponseDto.class);
+        hotelPricingConfigurationService
+                .initializeDefaultHotelPriceConfigurationForHotelManager(
+                        savedUser
+                );
+
+        return modelMapper.map(savedUser, UserResponseDto.class);
 
     }
 

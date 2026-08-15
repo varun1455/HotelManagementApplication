@@ -35,6 +35,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    @Column(unique = true)
+    private String paymentCustomerId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

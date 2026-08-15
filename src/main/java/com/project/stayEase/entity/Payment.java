@@ -31,9 +31,6 @@ public class Payment {
     @Column(unique = true)
     private String refundId;
 
-
-    private String transactionId;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;

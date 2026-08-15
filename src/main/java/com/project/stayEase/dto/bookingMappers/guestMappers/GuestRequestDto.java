@@ -1,4 +1,4 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.dto.bookingMappers.guestMappers;
 
 import com.project.stayEase.entity.enums.Gender;
 import lombok.Data;
