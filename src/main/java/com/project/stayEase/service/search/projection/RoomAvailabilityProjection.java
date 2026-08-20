@@ -1,4 +1,4 @@
-package com.project.stayEase.search.projection;
+package com.project.stayEase.service.search.projection;
 
 import com.project.stayEase.entity.Room;
 

@@ -1,4 +1,4 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.service.holiday.client.dto;
 
 import lombok.Data;
 

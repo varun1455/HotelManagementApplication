@@ -3,24 +3,22 @@ package com.project.stayEase.service.room;
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.roomMappers.RoomRequestDto;
 import com.project.stayEase.dto.roomMappers.RoomResponseDto;
+import com.project.stayEase.dto.roomMappers.RoomUpdateResult;
 import com.project.stayEase.entity.BedType;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.RoomType;
+import com.project.stayEase.repository.*;
 import com.project.stayEase.service.inventory.InventoryService;
-import com.project.stayEase.repository.BedTypeRepository;
-import com.project.stayEase.repository.HotelRepository;
-import com.project.stayEase.repository.RoomRepository;
-import com.project.stayEase.repository.RoomTypeRepository;
 import com.project.stayEase.security.SecurityUtils;
-import jakarta.transaction.Transactional;
+import com.project.stayEase.service.pricing.update.PricingWindowUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -33,14 +31,14 @@ public class RoomServiceImpl implements RoomService {
     private final InventoryService inventoryService;
     private final ModelMapper modelMapper;
     private final SecurityUtils securityUtils;
+    private final PricingWindowUpdateService pricingWindowUpdateService;
+    private final RoomUpdateService roomUpdateService;
 
     @Override
     @Transactional
     public RoomResponseDto createRoom(Long hotelId, RoomRequestDto roomRequestDto) {
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + hotelId));
-        if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
-            throw new AccessDeniedException("You are not allowed to access this hotel and create rooms for it");
-        }
+        securityUtils.validateHotelOwnership(hotel);
         RoomType roomType = roomTypeRepository.findById(roomRequestDto.getRoomTypeId()).orElseThrow(()->new ResourceNotFoundException("RoomType not found " + roomRequestDto.getRoomTypeId()));
         BedType bedType = bedTypeRepository.findById(roomRequestDto.getBedTypeId()).orElseThrow(()->new ResourceNotFoundException("BedType not found " + roomRequestDto.getBedTypeId()));
         Room room = modelMapper.map(roomRequestDto, Room.class);
@@ -51,6 +49,7 @@ public class RoomServiceImpl implements RoomService {
 
         if(hotel.isActive()){
             inventoryService.initializeRoom(room);
+            pricingWindowUpdateService.initializeRollingWindowPricing(room);
         }
         return modelMapper.map(room, RoomResponseDto.class);
     }
@@ -59,9 +58,7 @@ public class RoomServiceImpl implements RoomService {
     public List<RoomResponseDto> getAllRoomsInHotel(Long hotelId) {
 
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + hotelId));
-        if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
-            throw new AccessDeniedException("You are not allowed to access this hotel and it rooms");
-        }
+        securityUtils.validateHotelOwnership(hotel);
         return roomRepository.findByHotelId(hotelId)
                 .stream()
                 .map(room -> modelMapper.map(room, RoomResponseDto.class))
@@ -71,32 +68,35 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomResponseDto getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Room not found with id " + roomId));
-        if(room.getHotel().getOwner().getId().equals(securityUtils.getCurrentUserId())){
-            throw new AccessDeniedException("You are not allowed to access this room");
-        }
+        securityUtils.validateHotelOwnership(room.getHotel());
         return modelMapper.map(room, RoomResponseDto.class);
     }
 
-    @Override
-    public RoomResponseDto updateRoom(Long roomId, RoomRequestDto roomRequestDto) {
+    @Transactional
+    public RoomResponseDto updateRoom(Long roomId, RoomRequestDto request) {
+
         Room room = roomRepository.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Room not found with id " + roomId));
-        if(room.getHotel().getOwner().getId().equals(securityUtils.getCurrentUserId())){
-            throw new AccessDeniedException("You are not allowed to update this room");
+
+        securityUtils.validateHotelOwnership(room.getHotel());
+
+        RoomUpdateResult result = roomUpdateService.update(room, request);
+
+        roomRepository.save(room);
+
+        if (room.getHotel().isActive() && result.requiresPricingUpdate()) {
+            inventoryService.updateFutureInventory(room, room.getBasePrice(), room.getTotalCount());
+
+            pricingWindowUpdateService.initializeRollingWindowPricing(room);
         }
-        roomTypeRepository.findById(roomRequestDto.getRoomTypeId()).orElseThrow(()->new ResourceNotFoundException("RoomType not found " + roomRequestDto.getRoomTypeId()));
-        bedTypeRepository.findById(roomRequestDto.getBedTypeId()).orElseThrow(()->new ResourceNotFoundException("BedType not found " + roomRequestDto.getBedTypeId()));
-        Room updatedRoom = modelMapper.map(roomRequestDto, Room.class);
-        roomRepository.save(updatedRoom);
-        return modelMapper.map(updatedRoom, RoomResponseDto.class);
+
+        return modelMapper.map(room, RoomResponseDto.class);
     }
 
     @Override
     @Transactional
     public void deleteRoomById(long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(()->new ResourceNotFoundException("Room not found with id " + roomId));
-        if(room.getHotel().getOwner().getId().equals(securityUtils.getCurrentUserId())){
-            throw new AccessDeniedException("You are not allowed to delete this room");
-        }
+        securityUtils.validateHotelOwnership(room.getHotel());
         inventoryService.deleteInventories(room);
         roomRepository.deleteById(roomId);
     }

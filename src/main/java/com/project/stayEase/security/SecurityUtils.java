@@ -1,6 +1,8 @@
 package com.project.stayEase.security;
 
+import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,5 +23,14 @@ public class SecurityUtils {
         User user = (User) authentication.getPrincipal();
         assert user != null;
         return user.getId();
+    }
+
+    public void validateHotelOwnership(Hotel hotel) {
+
+        if (!hotel.getOwner().getId()
+                .equals(getCurrentUserId())) {
+
+            throw new AccessDeniedException("You are not allowed to access this hotel");
+        }
     }
 }

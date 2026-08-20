@@ -1,7 +1,8 @@
-package com.project.stayEase.security;
+package com.project.stayEase.service.auth;
 
 import com.project.stayEase.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -73,7 +74,6 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-
         return extractAllClaims(token)
                 .getSubject();
     }
@@ -85,6 +85,20 @@ public class JwtService {
             }
 
             return null;
+    }
+
+    public boolean isRefreshTokenValid(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+
+            String tokenType = claims.get("type", String.class);
+
+            return "REFRESH".equals(tokenType)
+                    && claims.getExpiration().after(new Date());
+
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
 }

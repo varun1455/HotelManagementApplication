@@ -6,9 +6,9 @@ import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.repository.BookingRepository;
 import com.project.stayEase.security.SecurityUtils;
 import com.project.stayEase.service.booking.services.inventory.InventoryReleaseService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

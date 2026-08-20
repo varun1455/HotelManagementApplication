@@ -3,7 +3,7 @@ package com.project.stayEase.repository;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;
-import com.project.stayEase.search.projection.RoomAvailabilityProjection;
+import com.project.stayEase.service.search.projection.RoomAvailabilityProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -198,7 +198,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     LocalDate findLastDynamicPriceDate();
 
 
-
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
 
 
@@ -208,4 +207,20 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
      WHERE i.date IN :dates
 """)
     List<Inventory> findByDates(@Param("dates") List<LocalDate> dates);
+
+    List<Inventory> findByRoomAndDateBetween(Room room, LocalDate startDate, LocalDate endDate);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END
+    FROM Inventory i
+    WHERE i.room = :room
+      AND i.date >= :today
+      AND i.bookedCount > :totalCount
+""")
+    boolean existsBookedCountGreaterThan(
+            @Param("room") Room room,
+            @Param("today") LocalDate today,
+            @Param("totalCount") Integer totalCount
+    );
+    List<Inventory> findByRoomAndDateGreaterThanEqual(Room room, LocalDate today);
 }

@@ -7,31 +7,35 @@ import com.project.stayEase.service.room.BedTypeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/admin/bedType")
+@RequestMapping("/bedType")
 public class BedTypeController {
 
     private final BedTypeService bedTypeService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BedTypeResponseDto>> createRoomType(@RequestBody BedTypeRequestDto bedTypeRequestDto) {
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    public ResponseEntity<ApiResponse<BedTypeResponseDto>> createBedType(@RequestBody BedTypeRequestDto bedTypeRequestDto) {
         BedTypeResponseDto bedTypeResponseDto = bedTypeService.createBedType(bedTypeRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(bedTypeResponseDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/{bedtypeId}")
-    public ResponseEntity<ApiResponse<BedTypeResponseDto>> getRoomType(@PathVariable Long bedtypeId) {
+    @PreAuthorize("hasAnyRole('HOTEL_MANAGER', 'SYSTEM_ADMIN')")
+    public ResponseEntity<ApiResponse<BedTypeResponseDto>> getBedType(@PathVariable Long bedtypeId) {
         BedTypeResponseDto bedTypeResponseDto = bedTypeService.findBedTypeById(bedtypeId);
         return new ResponseEntity<>(ApiResponse.successResponse(bedTypeResponseDto), HttpStatus.OK);
     }
 
-    @GetMapping("/allTypes")
-    public ResponseEntity<ApiResponse<List<BedTypeResponseDto>>> getAllRoomTypes() {
+    @GetMapping
+    @PreAuthorize("hasAnyRole('HOTEL_MANAGER', 'SYSTEM_ADMIN')")
+    public ResponseEntity<ApiResponse<List<BedTypeResponseDto>>> getAllBedTypes() {
         List<BedTypeResponseDto> bedTypeResponseDtos = bedTypeService.findAllBedTypes();
         return new ResponseEntity<>(ApiResponse.successResponse(bedTypeResponseDtos), HttpStatus.OK);
     }

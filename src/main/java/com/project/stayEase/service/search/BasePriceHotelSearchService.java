@@ -1,13 +1,13 @@
-package com.project.stayEase.search;
+package com.project.stayEase.service.search;
 
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchRequestDto;
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchResponseDto;
 import com.project.stayEase.dto.hotelSearchMappers.RoomSearchResponseDto;
 import com.project.stayEase.entity.Hotel;
-import com.project.stayEase.search.mapper.HotelSearchMapper;
-import com.project.stayEase.search.assembler.RoomAvailabilityAssembler;
+import com.project.stayEase.service.search.mapper.HotelSearchMapper;
+import com.project.stayEase.service.search.assembler.RoomAvailabilityAssembler;
 import com.project.stayEase.repository.InventoryRepository;
-import com.project.stayEase.search.projection.RoomAvailabilityProjection;
+import com.project.stayEase.service.search.projection.RoomAvailabilityProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

@@ -6,6 +6,8 @@ import com.project.stayEase.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
@@ -20,4 +22,7 @@ public class InventoryService {
         inventoryRepository.deleteByRoom(room);
     }
 
+    public void updateFutureInventory(Room room, BigDecimal basePrice, Integer totalCount) {
+        inventoryInitializationService.updateInventory(room, basePrice, totalCount);
+    }
 }

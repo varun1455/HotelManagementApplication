@@ -5,7 +5,9 @@ import com.project.stayEase.entity.Room;
 import com.project.stayEase.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,4 +49,29 @@ public class InventoryInitializationService {
     }
 
 
+    @Transactional
+    public void updateInventory(Room room, BigDecimal basePrice, Integer totalCount) {
+        LocalDate today = LocalDate.now();
+
+        boolean invalid =
+                inventoryRepository.existsBookedCountGreaterThan(room, today, totalCount);
+
+        if (invalid) {
+            throw new IllegalArgumentException(
+                    "Cannot reduce room quantity below the number of already booked rooms"
+            );
+        }
+
+        List<Inventory> inventories =
+                inventoryRepository.findByRoomAndDateGreaterThanEqual(room, today);
+
+        for (Inventory inventory : inventories) {
+            inventory.setTotalCount(totalCount);
+            inventory.setPrice(basePrice);
+        }
+
+        inventoryRepository.saveAll(inventories);
+
+
+    }
 }

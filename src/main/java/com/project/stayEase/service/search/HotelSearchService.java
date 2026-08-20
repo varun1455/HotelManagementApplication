@@ -1,4 +1,4 @@
-package com.project.stayEase.search;
+package com.project.stayEase.service.search;
 
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchRequestDto;
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchResponseDto;

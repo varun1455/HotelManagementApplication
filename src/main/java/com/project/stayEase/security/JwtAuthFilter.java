@@ -1,7 +1,8 @@
 package com.project.stayEase.security;
 
 import com.project.stayEase.entity.User;
-import com.project.stayEase.service.UserService;
+import com.project.stayEase.service.auth.JwtService;
+import com.project.stayEase.service.user.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;

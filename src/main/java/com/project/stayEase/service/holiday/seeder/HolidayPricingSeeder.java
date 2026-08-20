@@ -1,5 +1,6 @@
 package com.project.stayEase.service.holiday.seeder;
 
+import com.project.stayEase.config.SeedProperties;
 import com.project.stayEase.entity.HolidayPricingRule;
 import com.project.stayEase.entity.enums.HolidayType;
 import com.project.stayEase.repository.HolidayPricingRuleRepository;
@@ -15,6 +16,8 @@ import java.util.Arrays;
 public class HolidayPricingSeeder {
 
     private final HolidayPricingRuleRepository holidayPricingRuleRepository;
+    private final SeedProperties seedProperties;
+
 
     @PostConstruct
     public void seed() {
@@ -23,17 +26,19 @@ public class HolidayPricingSeeder {
             return;
         }
 
-        Arrays.stream(HolidayType.values())
-            .forEach(type -> {
+        for (HolidayType type : HolidayType.values()) {
 
-                HolidayPricingRule rule = new HolidayPricingRule();
+            HolidayPricingRule rule = new HolidayPricingRule();
 
-                rule.setHolidayType(type);
-                rule.setPriceFactor(BigDecimal.ONE);
+            rule.setHolidayType(type);
+            rule.setPriceFactor(
+                    seedProperties
+                            .getHolidayPricing()
+                            .getOrDefault(type, BigDecimal.ONE)
+            );
 
-                holidayPricingRuleRepository.save(rule);
-            }
-        );
+            holidayPricingRuleRepository.save(rule);
+        }
     }
 
 }

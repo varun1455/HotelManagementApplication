@@ -1,9 +1,9 @@
-package com.project.stayEase.search.mapper;
+package com.project.stayEase.service.search.mapper;
 
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchResponseDto;
 import com.project.stayEase.dto.hotelSearchMappers.RoomSearchResponseDto;
 import com.project.stayEase.entity.Hotel;
-import com.project.stayEase.search.projection.HotelSearchProjection;
+import com.project.stayEase.service.search.projection.HotelSearchProjection;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

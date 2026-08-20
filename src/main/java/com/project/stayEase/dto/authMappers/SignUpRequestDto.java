@@ -1,4 +1,4 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.dto.authMappers;
 
 
 import lombok.Data;
