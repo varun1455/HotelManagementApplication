@@ -11,12 +11,13 @@ import com.project.stayEase.entity.User;
 import com.project.stayEase.service.inventory.InventoryService;
 import com.project.stayEase.repository.HotelRepository;
 import com.project.stayEase.security.SecurityUtils;
-import jakarta.transaction.Transactional;
+import com.project.stayEase.service.pricing.update.PricingWindowUpdateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ public class HotelServiceImpl implements HotelService {
     private final ModelMapper modelMapper;
     private final InventoryService inventoryService;
     private final SecurityUtils securityUtils;
+    private final PricingWindowUpdateService pricingWindowUpdateService;
 
 
     @Override
@@ -74,16 +76,17 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Transactional
     public void activateHotel(Long id) {
         Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + id));
         if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
             throw new AccessDeniedException("You are not access this hotel");
         }
-        hotel.setActive(true);
         for(Room room: hotel.getRooms()){
             inventoryService.initializeRoom(room);
         }
-
+        pricingWindowUpdateService.updateRollingWindowPricing(hotel);
+        hotel.setActive(true);
     }
 
     @Override

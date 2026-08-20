@@ -1,7 +1,7 @@
 package com.project.stayEase.service.holiday;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.UpdatePriceFactorDto;
+import com.project.stayEase.service.holiday.client.dto.UpdatePriceFactorDto;
 import com.project.stayEase.entity.HolidayPricingRule;
 import com.project.stayEase.service.pricing.update.HolidayPricingRefreshService;
 import com.project.stayEase.repository.HolidayPricingRuleRepository;

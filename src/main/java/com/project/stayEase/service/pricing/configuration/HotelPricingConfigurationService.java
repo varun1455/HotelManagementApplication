@@ -1,6 +1,7 @@
 package com.project.stayEase.service.pricing.configuration;
 
 
+import com.project.stayEase.config.DefaultPricingProperties;
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.dto.hotelMappers.HotelPricingConfigurationDto;
 import com.project.stayEase.entity.HotelPricingConfiguration;
@@ -10,8 +11,6 @@ import com.project.stayEase.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 @RequiredArgsConstructor
 public class HotelPricingConfigurationService {
@@ -19,6 +18,7 @@ public class HotelPricingConfigurationService {
     private  final HotelPricingConfigurationRepository hotelPricingConfigurationRepository;
     private final SecurityUtils securityUtils;
     private final PricingConfigurationUpdateService pricingConfigurationUpdateService;
+    private final DefaultPricingProperties defaultPricingProperties;
 
     public HotelPricingConfiguration get(User owner) {
         return hotelPricingConfigurationRepository.findByOwner(owner)
@@ -29,13 +29,17 @@ public class HotelPricingConfigurationService {
     public void initializeDefaultHotelPriceConfigurationForHotelManager(User owner){
         HotelPricingConfiguration config = new HotelPricingConfiguration();
         config.setOwner(owner);
-        config.setSurgeFactor(BigDecimal.ONE);
-        config.setUrgencyDaysThreshold(7);
-        config.setUrgencyFactor(BigDecimal.valueOf(1.20));
-        config.setOccupancyThreshold(80);
-        config.setOccupancyFactor(BigDecimal.valueOf(1.15));
+        config.setSurgeFactor(defaultPricingProperties.getSurgeFactor());
 
-         hotelPricingConfigurationRepository.save(config);
+        config.setUrgencyDaysThreshold(defaultPricingProperties.getUrgencyDaysThreshold());
+
+        config.setUrgencyFactor(defaultPricingProperties.getUrgencyFactor());
+
+        config.setOccupancyThreshold(defaultPricingProperties.getOccupancyThreshold());
+
+        config.setOccupancyFactor(defaultPricingProperties.getOccupancyFactor());
+
+        hotelPricingConfigurationRepository.save(config);
     }
 
     public void updateHotelPricingConfiguration(HotelPricingConfigurationDto dto){

@@ -1,7 +1,7 @@
 package com.project.stayEase.dto.bookingMappers;
 
 import com.project.stayEase.dto.bookingMappers.guestMappers.GuestResponseDto;
-import com.project.stayEase.dto.UserResponseDto;
+import com.project.stayEase.dto.authMappers.UserResponseDto;
 import com.project.stayEase.entity.enums.BookingStatus;
 import lombok.Data;
 

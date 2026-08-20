@@ -1,8 +1,8 @@
-package com.project.stayEase.controller;
+package com.project.stayEase.controller.authandUsers;
 
 import com.project.stayEase.advices.ApiResponse;
-import com.project.stayEase.dto.*;
-import com.project.stayEase.security.AuthService;
+import com.project.stayEase.dto.authMappers.*;
+import com.project.stayEase.service.auth.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +41,16 @@ public class AuthController {
         return new ResponseEntity<>(ApiResponse.successResponse(new LoginResponseDto(authResponseDto.getAccessToken())), HttpStatus.OK);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(HttpServletRequest request) {
+
+        String accessToken = authService.refreshAccessToken(request);
+
+        AuthResponseDto response = new AuthResponseDto(accessToken, null);
+
+        return ResponseEntity.ok(ApiResponse.successResponse(response)
+        );
+    }
 
 
 

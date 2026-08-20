@@ -1,9 +1,6 @@
-package com.project.stayEase.dto;
+package com.project.stayEase.dto.authMappers;
 
-import com.project.stayEase.entity.enums.Role;
 import lombok.Data;
-
-import java.util.Set;
 
 @Data
 public class UserResponseDto {

@@ -1,6 +1,6 @@
 package com.project.stayEase.controller.holiday;
 
-import com.project.stayEase.dto.UpdatePriceFactorDto;
+import com.project.stayEase.service.holiday.client.dto.UpdatePriceFactorDto;
 import com.project.stayEase.service.holiday.HolidayPricingRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

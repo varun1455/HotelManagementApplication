@@ -6,9 +6,9 @@ import com.project.stayEase.entity.enums.PaymentStatus;
 import com.project.stayEase.repository.BookingRepository;
 import com.project.stayEase.repository.InventoryRepository;
 import com.project.stayEase.repository.PaymentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;

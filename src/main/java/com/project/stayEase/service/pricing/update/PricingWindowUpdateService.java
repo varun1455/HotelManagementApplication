@@ -1,9 +1,6 @@
 package com.project.stayEase.service.pricing.update;
 
-import com.project.stayEase.entity.Hotel;
-import com.project.stayEase.entity.HotelPricingConfiguration;
-import com.project.stayEase.entity.Inventory;
-import com.project.stayEase.entity.User;
+import com.project.stayEase.entity.*;
 import com.project.stayEase.service.pricing.calculation.PricingCalculationService;
 import com.project.stayEase.service.pricing.context.PricingContextBuilder;
 import com.project.stayEase.repository.HotelPricingConfigurationRepository;
@@ -46,6 +43,18 @@ public class PricingWindowUpdateService {
 
     }
 
+    public void initializeRollingWindowPricing(Room room) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate targetEndDate = today.plusDays(59);
+
+        refreshPricingForRoom(
+                room,
+                today,
+                targetEndDate
+        );
+    }
+
     public void updateUrgencyWindowPricing(Hotel hotel){
         int urgencyDaysThreshold = getConfiguration(hotel.getOwner()).getUrgencyDaysThreshold()-1;
         LocalDate today = LocalDate.now();
@@ -54,6 +63,40 @@ public class PricingWindowUpdateService {
         refreshPricing(hotel, today, endDate);
 
 
+    }
+
+    private void refreshPricingForRoom(
+            Room room,
+            LocalDate startDate,
+            LocalDate endDate) {
+
+        List<Inventory> inventories =
+                inventoryRepository.findByRoomAndDateBetween(
+                        room,
+                        startDate,
+                        endDate
+                );
+
+        if (inventories.isEmpty()) {
+            return;
+        }
+
+        Hotel hotel = room.getHotel();
+
+        HotelPricingConfiguration configuration = getConfiguration(hotel.getOwner());
+
+        PricingContext context =
+                pricingContextBuilder.findHolidaysAndBuildContext(
+                        configuration,
+                        startDate,
+                        endDate
+                );
+
+        pricingCalculationService.recalculatePricing(
+                hotel,
+                inventories,
+                context
+        );
     }
 
     private void refreshPricing(

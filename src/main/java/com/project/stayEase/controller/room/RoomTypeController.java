@@ -30,7 +30,7 @@ public class RoomTypeController {
         return new ResponseEntity<>(ApiResponse.successResponse(roomTypeResponseDto), HttpStatus.OK);
     }
 
-    @GetMapping("/allTypes")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<RoomTypeResponseDto>>> getAllRoomTypes() {
         List<RoomTypeResponseDto> roomTypeResponseDtos = roomTypeService.findAllRoomTypes();
         return new ResponseEntity<>(ApiResponse.successResponse(roomTypeResponseDtos), HttpStatus.OK);

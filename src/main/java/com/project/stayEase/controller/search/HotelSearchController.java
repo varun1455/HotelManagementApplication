@@ -5,7 +5,7 @@ import com.project.stayEase.advices.ApiResponse;
 import com.project.stayEase.dto.hotelMappers.HotelInfoDto;
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchRequestDto;
 import com.project.stayEase.dto.hotelSearchMappers.HotelSearchResponseDto;
-import com.project.stayEase.search.HotelSearchService;
+import com.project.stayEase.service.search.HotelSearchService;
 import com.project.stayEase.service.hotel.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

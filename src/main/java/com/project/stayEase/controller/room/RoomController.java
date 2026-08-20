@@ -36,7 +36,7 @@ public class RoomController {
         return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDto), HttpStatus.OK);
     }
 
-    @PutMapping("/{roomId}")
+    @PatchMapping("/{roomId}")
     public ResponseEntity<ApiResponse<RoomResponseDto>> updateRoom(@PathVariable Long roomId, @RequestBody RoomRequestDto roomRequestDto) {
         RoomResponseDto roomResponseDto = roomService.updateRoom(roomId, roomRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(roomResponseDto), HttpStatus.OK);

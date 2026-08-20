@@ -1,12 +1,15 @@
 package com.project.stayEase;
 
+import com.project.stayEase.config.DefaultPricingProperties;
+import com.project.stayEase.config.SeedProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableConfigurationProperties({SeedProperties.class, DefaultPricingProperties.class})
 public class StayEaseApplication {
 
 	public static void main(String[] args) {

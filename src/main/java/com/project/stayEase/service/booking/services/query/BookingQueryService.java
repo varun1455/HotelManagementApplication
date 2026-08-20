@@ -35,8 +35,6 @@ public class BookingQueryService {
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, QueryBookingsDto.class))
                 .collect(Collectors.toList());
-
-
     }
 
 }

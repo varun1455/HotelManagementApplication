@@ -10,7 +10,7 @@ import com.project.stayEase.service.booking.services.checkout.BookingCheckoutSer
 import com.project.stayEase.service.booking.services.creation.BookingCreationService;
 import com.project.stayEase.service.booking.services.guests.BookingGuestService;
 import com.project.stayEase.service.booking.services.provider.PaymentProvider;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

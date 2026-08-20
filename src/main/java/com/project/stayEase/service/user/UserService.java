@@ -1,4 +1,4 @@
-package com.project.stayEase.service;
+package com.project.stayEase.service.user;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.entity.User;
@@ -13,11 +13,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Override
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found with id " + id));
     }

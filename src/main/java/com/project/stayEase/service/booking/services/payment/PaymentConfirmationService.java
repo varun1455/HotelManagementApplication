@@ -7,10 +7,10 @@ import com.project.stayEase.repository.PaymentRepository;
 import com.project.stayEase.service.booking.domain.response.PaymentResult;
 import com.project.stayEase.service.booking.services.inventory.InventoryBookingService;
 import com.stripe.model.checkout.Session;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
