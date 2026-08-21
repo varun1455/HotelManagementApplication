@@ -2,11 +2,11 @@ package com.project.stayEase.service.booking.services.checkout;
 
 import com.project.stayEase.customExceptions.InvalidBookingStateException;
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.bookingMappers.paymentMapper.PaymentSessionDto;
+import com.project.stayEase.dto.checkout.PaymentSessionDto;
 import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.repository.BookingRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import com.project.stayEase.service.booking.domain.response.PaymentSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

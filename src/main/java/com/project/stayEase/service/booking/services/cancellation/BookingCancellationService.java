@@ -4,7 +4,7 @@ import com.project.stayEase.customExceptions.ResourceNotFoundException;
 import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.enums.BookingStatus;
 import com.project.stayEase.repository.BookingRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import com.project.stayEase.service.booking.services.inventory.InventoryReleaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

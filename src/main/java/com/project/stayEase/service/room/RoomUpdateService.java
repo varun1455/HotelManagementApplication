@@ -1,8 +1,8 @@
 package com.project.stayEase.service.room;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.roomMappers.RoomRequestDto;
-import com.project.stayEase.dto.roomMappers.RoomUpdateResult;
+import com.project.stayEase.dto.room.request.RoomRequestDto;
+import com.project.stayEase.dto.bedType.response.RoomUpdateResult;
 import com.project.stayEase.entity.BedType;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.RoomType;

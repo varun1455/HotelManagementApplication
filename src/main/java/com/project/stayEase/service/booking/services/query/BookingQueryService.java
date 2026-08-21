@@ -1,12 +1,12 @@
 package com.project.stayEase.service.booking.services.query;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.bookingMappers.QueryBookingsDto;
+import com.project.stayEase.dto.booking.response.QueryBookingsDto;
 import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.repository.BookingRepository;
 import com.project.stayEase.repository.HotelRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;

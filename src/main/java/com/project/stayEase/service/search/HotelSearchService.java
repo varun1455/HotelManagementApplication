@@ -1,7 +1,7 @@
 package com.project.stayEase.service.search;
 
-import com.project.stayEase.dto.hotelSearchMappers.HotelSearchRequestDto;
-import com.project.stayEase.dto.hotelSearchMappers.HotelSearchResponseDto;
+import com.project.stayEase.dto.search.request.HotelSearchRequestDto;
+import com.project.stayEase.dto.search.response.HotelSearchResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

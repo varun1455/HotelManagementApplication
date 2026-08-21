@@ -1,23 +1,22 @@
 package com.project.stayEase.service.room;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.roomMappers.RoomRequestDto;
-import com.project.stayEase.dto.roomMappers.RoomResponseDto;
-import com.project.stayEase.dto.roomMappers.RoomUpdateResult;
+import com.project.stayEase.dto.room.request.RoomRequestDto;
+import com.project.stayEase.dto.room.response.RoomResponseDto;
+import com.project.stayEase.dto.bedType.response.RoomUpdateResult;
 import com.project.stayEase.entity.BedType;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.RoomType;
 import com.project.stayEase.repository.*;
 import com.project.stayEase.service.inventory.InventoryService;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import com.project.stayEase.service.pricing.update.PricingWindowUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service

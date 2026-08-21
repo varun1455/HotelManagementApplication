@@ -1,9 +1,9 @@
 package com.project.stayEase.service.auth;
 
-import com.project.stayEase.dto.authMappers.AuthResponseDto;
-import com.project.stayEase.dto.authMappers.LoginRequestDto;
-import com.project.stayEase.dto.authMappers.SignUpRequestDto;
-import com.project.stayEase.dto.authMappers.UserResponseDto;
+import com.project.stayEase.dto.auth.response.AuthResponseDto;
+import com.project.stayEase.dto.auth.request.LoginRequestDto;
+import com.project.stayEase.dto.auth.request.SignUpRequestDto;
+import com.project.stayEase.dto.auth.response.UserResponseDto;
 import com.project.stayEase.entity.User;
 import com.project.stayEase.entity.enums.Role;
 import com.project.stayEase.repository.UserRepository;

@@ -1,8 +1,8 @@
 package com.project.stayEase.service.room;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.roomMappers.BedTypeRequestDto;
-import com.project.stayEase.dto.roomMappers.BedTypeResponseDto;
+import com.project.stayEase.dto.bedType.request.BedTypeRequestDto;
+import com.project.stayEase.dto.bedType.response.BedTypeResponseDto;
 import com.project.stayEase.entity.BedType;
 import com.project.stayEase.repository.BedTypeRepository;
 import lombok.AllArgsConstructor;
