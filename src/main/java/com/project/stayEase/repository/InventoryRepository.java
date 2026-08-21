@@ -3,7 +3,7 @@ package com.project.stayEase.repository;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;
-import com.project.stayEase.service.search.projection.RoomAvailabilityProjection;
+import com.project.stayEase.configuration.projection.RoomAvailabilityProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

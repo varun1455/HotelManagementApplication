@@ -1,7 +1,7 @@
 package com.project.stayEase;
 
-import com.project.stayEase.config.DefaultPricingProperties;
-import com.project.stayEase.config.SeedProperties;
+import com.project.stayEase.configuration.properties.DefaultPricingProperties;
+import com.project.stayEase.configuration.properties.SeedProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

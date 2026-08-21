@@ -1,7 +1,7 @@
 package com.project.stayEase.service.room;
 
-import com.project.stayEase.dto.roomMappers.RoomRequestDto;
-import com.project.stayEase.dto.roomMappers.RoomResponseDto;
+import com.project.stayEase.dto.room.request.RoomRequestDto;
+import com.project.stayEase.dto.room.response.RoomResponseDto;
 import com.project.stayEase.entity.Room;
 
 import java.util.List;

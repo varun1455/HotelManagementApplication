@@ -1,13 +1,13 @@
 package com.project.stayEase.service.pricing.configuration;
 
 
-import com.project.stayEase.config.DefaultPricingProperties;
+import com.project.stayEase.configuration.properties.DefaultPricingProperties;
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.hotelMappers.HotelPricingConfigurationDto;
+import com.project.stayEase.dto.hotel.request.HotelPricingConfigurationDto;
 import com.project.stayEase.entity.HotelPricingConfiguration;
 import com.project.stayEase.entity.User;
 import com.project.stayEase.repository.HotelPricingConfigurationRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

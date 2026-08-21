@@ -1,16 +1,16 @@
 package com.project.stayEase.service.hotel;
 
 import com.project.stayEase.customExceptions.ResourceNotFoundException;
-import com.project.stayEase.dto.hotelMappers.HotelInfoDto;
-import com.project.stayEase.dto.hotelMappers.HotelRequestDto;
-import com.project.stayEase.dto.hotelMappers.HotelResponseDto;
-import com.project.stayEase.dto.roomMappers.RoomResponseDto;
+import com.project.stayEase.dto.search.response.HotelInfoDto;
+import com.project.stayEase.dto.hotel.request.HotelRequestDto;
+import com.project.stayEase.dto.hotel.response.HotelResponseDto;
+import com.project.stayEase.dto.room.response.RoomResponseDto;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.entity.User;
 import com.project.stayEase.service.inventory.InventoryService;
 import com.project.stayEase.repository.HotelRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import com.project.stayEase.service.pricing.update.PricingWindowUpdateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,9 +1,9 @@
 package com.project.stayEase.service.booking.facade;
 
-import com.project.stayEase.dto.bookingMappers.BookingRequestDto;
-import com.project.stayEase.dto.bookingMappers.BookingResponseDto;
-import com.project.stayEase.dto.bookingMappers.guestMappers.GuestRequestDto;
-import com.project.stayEase.dto.bookingMappers.paymentMapper.PaymentSessionDto;
+import com.project.stayEase.dto.booking.request.BookingRequestDto;
+import com.project.stayEase.dto.booking.response.BookingResponseDto;
+import com.project.stayEase.dto.guests.request.GuestRequestDto;
+import com.project.stayEase.dto.checkout.PaymentSessionDto;
 import com.project.stayEase.service.booking.domain.request.PaymentVerificationRequest;
 import com.project.stayEase.service.booking.services.cancellation.BookingCancellationService;
 import com.project.stayEase.service.booking.services.checkout.BookingCheckoutService;

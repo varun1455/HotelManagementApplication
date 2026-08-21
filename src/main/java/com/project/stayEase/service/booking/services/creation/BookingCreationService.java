@@ -1,13 +1,13 @@
 package com.project.stayEase.service.booking.services.creation;
 
-import com.project.stayEase.dto.bookingMappers.BookingRequestDto;
-import com.project.stayEase.dto.bookingMappers.BookingResponseDto;
+import com.project.stayEase.dto.booking.request.BookingRequestDto;
+import com.project.stayEase.dto.booking.response.BookingResponseDto;
 import com.project.stayEase.entity.Booking;
 import com.project.stayEase.entity.Hotel;
 import com.project.stayEase.entity.Inventory;
 import com.project.stayEase.entity.Room;
 import com.project.stayEase.repository.BookingRepository;
-import com.project.stayEase.security.SecurityUtils;
+import com.project.stayEase.security.utils.SecurityUtils;
 import com.project.stayEase.service.booking.services.inventory.InventoryReservationService;
 import com.project.stayEase.service.hotel.HotelService;
 import com.project.stayEase.service.room.RoomService;
