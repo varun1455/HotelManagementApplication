@@ -39,7 +39,6 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelResponseDto createNewHotel(HotelRequestDto hotelRequestDto) {
 
-        log.info("creating new hotel with hotelRequestDto={}", hotelRequestDto.getName());
         Hotel hotel = modelMapper.map(hotelRequestDto, Hotel.class);
         hotel.setOwner(securityUtils.getCurrentuser());
         hotelRepository.save(hotel);
@@ -49,7 +48,6 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelResponseDto getHotelById(Long id) {
-        log.info("getting hotel with id={}", id);
         Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + id));
         if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
             throw new AccessDeniedException("You are not access this hotel");
@@ -59,7 +57,6 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelResponseDto updateHotelById(Long id, HotelRequestDto hotelRequestDto) {
-        log.info("updating hotel with id={}", id);
         Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Hotel not found with id " + id));
         if(!hotel.getOwner().getId().equals(securityUtils.getCurrentUserId())){
             throw new AccessDeniedException("You are not allowed to modify this hotel");

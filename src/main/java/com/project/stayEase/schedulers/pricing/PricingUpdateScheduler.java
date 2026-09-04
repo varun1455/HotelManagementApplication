@@ -1,4 +1,4 @@
-package com.project.stayEase.service.pricing.schedular;
+package com.project.stayEase.schedulers.pricing;
 
 import com.project.stayEase.service.pricing.coordinator.PricingUpdateCoordinator;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PricingSchedular {
+public class PricingUpdateScheduler {
 
     private final PricingUpdateCoordinator pricingUpdateCoordinator;
 

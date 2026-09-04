@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <appender name = "STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level requestId=%X{requestId} [userId=%X{userId}] [class=%X{className}] [method=%X{methodName}] %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name = "HOTEL_BOOKING_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/hotelBooking.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/hotelBooking.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [class=%X{className}] [method=%X{methodName}] %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name = "SCHEDULER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/scheduler.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/scheduler.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <logger level="DEBUG" name="com.project.stayEase.service.*" additivity = "false">
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="HOTEL_BOOKING_LOG_FILE" />
+    </logger>
+
+
+    <logger level="DEBUG" name="com.project.stayEase.schedulers" additivity = "false">
+        <appender-ref ref="SCHEDULER_FILE" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

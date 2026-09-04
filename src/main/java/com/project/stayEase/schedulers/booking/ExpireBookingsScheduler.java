@@ -1,4 +1,4 @@
-package com.project.stayEase.service.booking.services.schedular;
+package com.project.stayEase.schedulers.booking;
 
 
 import com.project.stayEase.service.booking.services.expiration.BookingExpirationService;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BookingSchedular {
+public class ExpireBookingsScheduler {
     private final BookingExpirationService bookingExpirationService;
 
     @Scheduled(cron = "0 * * * * *")

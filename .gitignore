@@ -35,3 +35,6 @@ build/
 # Spring config
 application.properties
 systemDataSeeder.yml
+
+# Application logs
+logs/

@@ -34,7 +34,6 @@ public class HotelController {
     @Operation(summary = "Create a new hotel")
     @PostMapping
     public ResponseEntity<ApiResponse<HotelResponseDto>> createHotel(@RequestBody HotelRequestDto hotelRequestDto) {
-        log.info("attempting hotel with hotelRequestDto={}", hotelRequestDto);
         HotelResponseDto hotelResponseDto = hotelService.createNewHotel(hotelRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(hotelResponseDto),HttpStatus.CREATED);
 
@@ -43,7 +42,6 @@ public class HotelController {
     @Operation(summary = "Get hotel by ID")
     @GetMapping("/{hotelId}")
     public ResponseEntity<ApiResponse<HotelResponseDto>> getHotelById(@PathVariable Long hotelId) {
-        log.info("attempting hotel with hotelId={}", hotelId);
         HotelResponseDto hotelResponseDto = hotelService.getHotelById(hotelId);
         return new ResponseEntity<>(ApiResponse.successResponse(hotelResponseDto),HttpStatus.OK);
 
@@ -52,7 +50,6 @@ public class HotelController {
     @Operation(summary = "Update hotel")
     @PutMapping("/{hotelId}")
     public ResponseEntity<ApiResponse<HotelResponseDto>> updateHotelById(@PathVariable Long hotelId, @RequestBody HotelRequestDto hotelRequestDto) {
-        log.info("attempting hotel with hotelId={}", hotelId);
         HotelResponseDto hotelResponseDto =  hotelService.updateHotelById(hotelId, hotelRequestDto);
         return new ResponseEntity<>(ApiResponse.successResponse(hotelResponseDto),HttpStatus.OK);
     }

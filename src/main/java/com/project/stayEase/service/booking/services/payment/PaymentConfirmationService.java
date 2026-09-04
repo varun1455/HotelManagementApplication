@@ -5,7 +5,7 @@ import com.project.stayEase.entity.Payment;
 import com.project.stayEase.entity.enums.PaymentStatus;
 import com.project.stayEase.repository.PaymentRepository;
 import com.project.stayEase.service.booking.domain.response.PaymentResult;
-import com.project.stayEase.service.booking.services.inventory.InventoryBookingService;
+import com.project.stayEase.service.booking.services.inventory.InventoryConfirmBookingService;
 import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,20 +20,17 @@ public class PaymentConfirmationService {
 
 
     private final PaymentRepository paymentRepository;
-    private final InventoryBookingService inventoryBookingService;
+    private final InventoryConfirmBookingService inventoryConfirmBookingService;
 
     @Transactional
     public PaymentResult confirmPayment(Session session){
         String sessionId = session.getId();
-
-        log.info("Processing Stripe checkout session: {}", sessionId);
 
         Payment payment = paymentRepository.findByCheckoutSessionId(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found with session id " + sessionId));
 
         // Idempotency
         if (payment.getPaymentStatus() == PaymentStatus.APPROVED) {
-            log.info("Payment already processed: {}", sessionId);
             return PaymentResult.builder()
                     .successful(true)
                     .providerPaymentId(payment.getPaymentIntentId())
@@ -43,7 +40,6 @@ public class PaymentConfirmationService {
         }
 
         if (!"paid".equals(session.getPaymentStatus())) {
-            log.warn("Checkout completed but payment not paid. " + "SessionId={}, status={}", sessionId, session.getPaymentStatus());
             return PaymentResult.builder()
                     .successful(false)
                     .status(PaymentStatus.FAILED)
@@ -55,9 +51,7 @@ public class PaymentConfirmationService {
 
         payment.setPaymentStatus(PaymentStatus.APPROVED);
 
-        inventoryBookingService.confirm(payment.getBooking());
-
-        log.info("Payment successfully confirmed. " + "paymentId={}, bookingId={}", payment.getId(), payment.getBooking().getId());
+        inventoryConfirmBookingService.confirm(payment.getBooking());
 
         return PaymentResult.builder()
                         .providerPaymentId(session.getPaymentIntent())

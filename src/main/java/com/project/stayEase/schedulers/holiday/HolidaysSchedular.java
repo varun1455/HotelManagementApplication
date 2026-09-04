@@ -1,4 +1,4 @@
-package com.project.stayEase.service.holiday.schedular;
+package com.project.stayEase.schedulers.holiday;
 
 import com.project.stayEase.service.holiday.services.PublicHolidaysService;
 import lombok.RequiredArgsConstructor;
