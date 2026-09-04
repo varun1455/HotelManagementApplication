@@ -18,13 +18,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidBookingStateException.class)
     public ResponseEntity<ApiResponse<Object>> handleInvalidBookingState(InvalidBookingStateException e) {
         ApiError apiError =ApiError.builder().message(e.getMessage()).build();
-        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(GuestCapacityExceededException.class)
     public ResponseEntity<ApiResponse<Void>> handleGuestCapacity(GuestCapacityExceededException e) {
         ApiError apiError =ApiError.builder().message(e.getMessage()).build();
-        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RoomNotAvailableException.class)
@@ -56,6 +56,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PaymentAlreadyCompletedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAlreadyCompletedPayment(PaymentAlreadyCompletedException e){
+        ApiError apiError =ApiError.builder().message(e.getMessage()).build();
+        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PaymentRetryLimitExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePaymentRetryLimitExceeded(PaymentAlreadyCompletedException e){
+        ApiError apiError =ApiError.builder().message(e.getMessage()).build();
+        return new ResponseEntity<>(ApiResponse.failureResponse(apiError),HttpStatus.TOO_MANY_REQUESTS);
+    }
 
 
 }

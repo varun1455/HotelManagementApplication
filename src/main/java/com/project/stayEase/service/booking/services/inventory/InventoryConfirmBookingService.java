@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryBookingService {
+public class InventoryConfirmBookingService {
 
     private final InventoryRepository inventoryRepository;;
 

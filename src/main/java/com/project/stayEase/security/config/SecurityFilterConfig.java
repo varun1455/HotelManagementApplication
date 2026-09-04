@@ -1,6 +1,7 @@
 package com.project.stayEase.security.config;
 
 
+import com.project.stayEase.aspect.MdcRequestContextFilter;
 import com.project.stayEase.security.handlers.JwtAuthenticationEntryPoint;
 import com.project.stayEase.security.filters.JwtAuthFilter;
 import com.project.stayEase.security.handlers.JwtAccessDeniedHandler;
@@ -28,6 +29,7 @@ public class SecurityFilterConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final MdcRequestContextFilter requestContextFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -38,7 +40,8 @@ public class SecurityFilterConfig {
                 .exceptionHandling(exception->exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(requestContextFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthFilter, MdcRequestContextFilter.class)
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers(
                                 "/swagger-ui/**",
