@@ -1,0 +1,43 @@
+app:
+  seed:
+    enabled: ${APP_SEED_ENABLED:}
+
+    room-types:
+      - SINGLE
+      - DOUBLE
+      - DELUXE
+      - SUITE
+
+    bed-types:
+      - SINGLE
+      - DOUBLE
+      - QUEEN
+      - KING
+
+    system-admin:
+      email: ${SEED_SYSTEM_ADMIN_EMAIL:}
+      password: ${SEED_SYSTEM_ADMIN_PASSWORD:}
+
+    hotel-managers:
+      - email: ${SEED_HOTEL_MANAGER_1_EMAIL:}
+        password: ${SEED_HOTEL_MANAGER_1_PASSWORD:}
+      - email: ${SEED_HOTEL_MANAGER_2_EMAIL:}
+        password: ${SEED_HOTEL_MANAGER_2_PASSWORD:}
+      - email: ${SEED_HOTEL_MANAGER_3_EMAIL:}
+        password: ${SEED_HOTEL_MANAGER_3_PASSWORD:}
+
+
+    pricing:
+      default:
+        surge-factor: ${DEFAULT_SURGE_FACTOR:}
+        urgency-days-threshold: ${DEFAULT_URGENCY_DAYS_THRESHOLD:}
+        urgency-factor: ${DEFAULT_URGENCY_FACTOR:}
+        occupancy-threshold: ${DEFAULT_OCCUPANCY_THRESHOLD:}
+        occupancy-factor: ${DEFAULT_OCCUPANCY_FACTOR:}
+
+    holiday-pricing:
+      NATIONAL: ${HOLIDAY_NATIONAL_FACTOR:}
+      OPTIONAL: ${HOLIDAY_OPTIONAL_FACTOR:}
+      RELIGIOUS: ${HOLIDAY_RELIGIOUS_FACTOR:}
+      LOCAL: ${HOLIDAY_LOCAL_FACTOR:}
+      OBSERVANCE: ${HOLIDAY_OBSERVANCE_FACTOR:}

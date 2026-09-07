@@ -21,7 +21,7 @@ public class HolidayPricingSeeder {
     @PostConstruct
     public void seed() {
 
-        if (holidayPricingRuleRepository.count() > 0) {
+        if (!seedProperties.isEnabled() || holidayPricingRuleRepository.count() > 0) {
             return;
         }
 

@@ -32,9 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
-# Spring config
-application.properties
-systemDataSeeder.yml
 
 # Application logs
 logs/
+
+.env
+.dockerignore
