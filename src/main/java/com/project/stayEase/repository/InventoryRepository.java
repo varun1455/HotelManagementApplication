@@ -74,6 +74,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 AND i.date < :endDate
                 AND i.closed = false
                 AND (i.totalCount - i.bookedCount- i.reservedCount) >= :roomsCount
+            ORDER BY i.date ASC
             """)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Inventory> findAndLockAvailableInventory(
@@ -92,7 +93,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
         WHERE i.room.id = :roomId
         AND i.date >= :startDate
         AND i.date < :endDate
-        AND (i.totalCount - i.bookedCount - i.reservedCount) >= :numberOfRooms
         AND i.closed = false
  
  """)void initBooking(
@@ -130,6 +130,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 AND i.date < :endDate
                 AND (i.totalCount - i.bookedCount) >= :roomsCount
                 AND i.closed = false
+            ORDER BY i.date ASC
             """)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Inventory> findAndLockReservedInventory(
@@ -149,7 +150,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 WHERE i.room.id = :roomId
                     AND i.date >= :startDate
                     AND i.date < :endDate
-                    AND (i.totalCount - i.bookedCount) >= :numberOfRooms
                     AND i.reservedCount >= :numberOfRooms
                     AND i.closed = false
     """

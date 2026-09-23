@@ -38,3 +38,7 @@ logs/
 
 .env
 .dockerignore
+
+#properties
+application-local.properties
+systemDataSeederLocal.yml

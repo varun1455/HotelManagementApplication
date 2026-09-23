@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,6 +28,8 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       DB_USERNAME: ${POSTGRES_USERNAME}
@@ -58,5 +60,53 @@ services:
       HOLIDAY_LOCAL_FACTOR: ${HOLIDAY_LOCAL_FACTOR}
       HOLIDAY_OBSERVANCE_FACTOR: ${HOLIDAY_OBSERVANCE_FACTOR}
 
+  loki:
+    image: grafana/loki:latest
+    container_name: stayease-loki
+    restart: unless-stopped
+
+    ports:
+      - "3100:3100"
+
+    command:
+      - "-config.file=/etc/loki/loki-config.yml"
+
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki_data:/loki
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: stayease-alloy
+    restart: unless-stopped
+
+    depends_on:
+      - loki
+
+    volumes:
+      - ./logs:/var/log/stayease:ro
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+
+    command:
+      - "run"
+      - "/etc/alloy/config.alloy"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: stayease-grafana
+    restart: unless-stopped
+
+    depends_on:
+      - loki
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+
 volumes:
   postgres_data:
+  loki_data:
+  grafana_data:
