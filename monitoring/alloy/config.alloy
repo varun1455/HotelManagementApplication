@@ -1,0 +1,52 @@
+local.file_match "hotel_booking" {
+  path_targets = [
+    {
+      __path__ = "/var/log/stayease/hotelBooking.log",
+      service  = "hotel-booking",
+      app      = "stayease",
+    },
+  ]
+}
+
+local.file_match "hotel_pricing" {
+  path_targets = [
+    {
+      __path__ = "/var/log/stayease/hotelPricing.log",
+      service  = "hotel-pricing",
+      app      = "stayease",
+    },
+  ]
+}
+
+local.file_match "scheduler" {
+  path_targets = [
+    {
+      __path__ = "/var/log/stayease/scheduler.log",
+      service  = "scheduler",
+      app      = "stayease",
+    },
+  ]
+}
+
+
+loki.source.file "hotel_booking" {
+  targets    = local.file_match.hotel_booking.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.source.file "hotel_pricing" {
+  targets    = local.file_match.hotel_pricing.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.source.file "scheduler" {
+  targets    = local.file_match.scheduler.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
