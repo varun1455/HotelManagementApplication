@@ -18,9 +18,7 @@ services:
       retries: 10
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: varunjain55/stayease-app:1.1
     container_name: stayease-app
     restart: unless-stopped
     depends_on:
