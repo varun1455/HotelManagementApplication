@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict 7pyEdbE2Qnv4iCarkg5K6yTryyepZEIfC3BR5nxRxjHL4zZ9DMFMOC6FAkLQkIY
-
 -- Dumped from database version 16.15
 -- Dumped by pg_dump version 16.15
 
@@ -779,5 +777,4 @@ ALTER TABLE ONLY public.room
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 7pyEdbE2Qnv4iCarkg5K6yTryyepZEIfC3BR5nxRxjHL4zZ9DMFMOC6FAkLQkIY
 
