@@ -1,0 +1,79 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: docker-publish-main
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Determine next Docker image version
+        id: version
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          REPO="$DOCKERHUB_USERNAME/stayease-app"
+
+          echo "Fetching existing Docker image tags..."
+
+          TAGS=$(curl -s "https://hub.docker.com/v2/repositories/$REPO/tags?page_size=100" \
+            | jq -r '.results[].name' \
+            | grep -E '^[0-9]+(\.[0-9]+)*$' \
+            || true)
+
+          if [ -z "$TAGS" ]; then
+            VERSION="1.0"
+          else
+            VERSION=$(echo "$TAGS" | sort -V | tail -n 1)
+
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+
+            MINOR=$((MINOR + 1))
+
+            VERSION="$MAJOR.$MINOR"
+          fi
+
+          echo "Next version: $VERSION"
+
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: |
+          docker build \
+            -t "$DOCKERHUB_USERNAME/stayease-app:$VERSION" .
+
+      - name: Push Docker image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: |
+          docker push \
+            "$DOCKERHUB_USERNAME/stayease-app:$VERSION"
+
+      - name: Show published version
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: |
+          echo "Successfully published:"
+          echo "$DOCKERHUB_USERNAME/stayease-app:$VERSION"
