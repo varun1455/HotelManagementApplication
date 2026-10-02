@@ -78,6 +78,12 @@ jobs:
           echo "Successfully published:"
           echo "$DOCKERHUB_USERNAME/stayease-app:$VERSION"
 
+      - name: Test VM SSH port
+        run: |
+          timeout 10 bash -c '</dev/tcp/${{ secrets.VM_HOST }}/22' \
+          && echo "Port 22 is reachable" \
+          || echo "Port 22 is NOT reachable"
+
       - name: Deploy to GCP VM
         uses: appleboy/ssh-action@v1.2.2
 
