@@ -77,3 +77,23 @@ jobs:
         run: |
           echo "Successfully published:"
           echo "$DOCKERHUB_USERNAME/stayease-app:$VERSION"
+
+      - name: Deploy to GCP VM
+        uses: appleboy/ssh-action@v1.2.2
+
+        with:
+          host: ${{secrets.VM_HOST}}
+          username: ${{secrets.VM_USERNAME}}
+          key: ${{secrets.VM_SSH_PRIVATE_KEY}}
+          script: |    
+            
+            cd ~/stayease
+            
+            ./deploy.sh ${{ steps.version.outputs.VERSION }}
+
+      - name: Deployment complete
+        run: |
+          echo "======================================"
+          echo "StayEase deployment completed"
+          echo "Version: ${{ steps.version.outputs.VERSION }}"
+          echo "======================================"
