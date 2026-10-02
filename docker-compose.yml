@@ -18,7 +18,7 @@ services:
       retries: 10
 
   app:
-    image: varunjain55/stayease-app:1.5
+    image: varunjain55/stayease-app:${STAYEASE_VERSION}
     container_name: stayease-app
     restart: unless-stopped
     depends_on:
