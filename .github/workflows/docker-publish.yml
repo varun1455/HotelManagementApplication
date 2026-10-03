@@ -78,28 +78,25 @@ jobs:
           echo "Successfully published:"
           echo "$DOCKERHUB_USERNAME/stayease-app:$VERSION"
 
-      - name: Test VM SSH port
+  deploy:
+    name: Deploy to StayEase VM
+
+    needs: build-and-push
+
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Deploy application
         run: |
-          timeout 10 bash -c '</dev/tcp/${{ secrets.VM_HOST }}/22' \
-          && echo "Port 22 is reachable" \
-          || echo "Port 22 is NOT reachable"
+          cd ~/stayease
 
-      - name: Deploy to GCP VM
-        uses: appleboy/ssh-action@v1.2.2
-
-        with:
-          host: ${{secrets.VM_HOST}}
-          username: ${{secrets.VM_USERNAME}}
-          key: ${{secrets.VM_SSH_PRIVATE_KEY}}
-          script: |    
-            
-            cd ~/stayease
-            
-            ./deploy.sh ${{ steps.version.outputs.VERSION }}
+          echo "Deploying StayEase version:"
+          echo "${{ needs.build-and-push.outputs.version }}" ./deploy.sh ${{ needs.build-and-push.outputs.version }}
 
       - name: Deployment complete
         run: |
           echo "======================================"
           echo "StayEase deployment completed"
-          echo "Version: ${{ steps.version.outputs.VERSION }}"
+          echo "Version: ${{ needs.build-and-push.outputs.version }}"
           echo "======================================"
