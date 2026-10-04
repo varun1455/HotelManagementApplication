@@ -82,6 +82,7 @@ public class AuthController {
         Cookie cookie = new Cookie("refreshToken", authResponseDto.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(cookieMaxAge);
+        cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
         return new ResponseEntity<>(ApiResponse.successResponse(new LoginResponseDto(authResponseDto.getAccessToken())), HttpStatus.OK);
     }
@@ -101,14 +102,37 @@ public class AuthController {
             )
     })
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> refreshToken(HttpServletRequest request) {
 
         String accessToken = authService.refreshAccessToken(request);
 
-        AuthResponseDto response = new AuthResponseDto(accessToken, null);
+        LoginResponseDto response = new LoginResponseDto(accessToken);
 
-        return ResponseEntity.ok(ApiResponse.successResponse(response)
-        );
+        return ResponseEntity.ok(ApiResponse.successResponse(response));
+    }
+
+
+    @Operation(
+            summary = "Logout",
+            description = "Logs out the user by clearing the refresh token stored in the HttpOnly cookie."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "204",
+                    description = "Logout successful"
+            )
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.noContent().build();
     }
 
 
