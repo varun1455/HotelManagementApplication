@@ -48,6 +48,7 @@ public class JwtService {
             return Jwts.builder()
                     .subject(user.getId().toString())
                     .claim("tokenType", "Refresh")
+                    .claim("userId", user.getId())
                     .issuedAt(new Date())
                     .expiration(
                             new Date(
@@ -91,9 +92,9 @@ public class JwtService {
         try {
             Claims claims = extractAllClaims(token);
 
-            String tokenType = claims.get("type", String.class);
+            String tokenType = claims.get("tokenType", String.class);
 
-            return "REFRESH".equals(tokenType)
+            return "Refresh".equals(tokenType)
                     && claims.getExpiration().after(new Date());
 
         } catch (JwtException | IllegalArgumentException e) {
