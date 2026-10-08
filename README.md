@@ -376,7 +376,7 @@ Grafana dashboards can be used to investigate booking activity, pricing activity
 The booking performance dashboard provides business-level visibility into
 booking activity and related application metrics.
 
-![Stayease Booking performance](docs/videos/booking-performance.mp4)
+![Stayease Booking performance](https://github.com/varun1455/HotelManagementApplication/blob/main/docs/videos/booking-performance.mp4)
 
 ### Application Logs
 
