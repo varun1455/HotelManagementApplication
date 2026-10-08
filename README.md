@@ -856,5 +856,3 @@ Prometheus / Node Exporter
         +
 JMeter
 ```
-
-**StayEase is designed as a complete backend system rather than only a collection of REST CRUD endpoints.**
